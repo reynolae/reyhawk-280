@@ -1,12 +1,50 @@
 body {
-    background: #DDDDDD;
+    background: #EEF0EB;
 }
 
 .navbar {
-    background-color: #800000;
+    background-color: #153242;
+    color: white;
+}
+
+nav .dropdown-item {
+    width: 250px;
+}
+
+.lower {
+    top: 56px;
+    background-color: #284B63;
     color: white;
 }
 
 .page-container {
     margin-top: 75px;
 }
+
+/* homepage title */
+#titleText {
+    justify-content: center;
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 40px;
+    text-shadow: 2px 2px gray;
+    font-size: 6em;
+}
+
+.main-icon {
+    text-align: center;
+    font-size: 30px;
+}
+
+#mainPage img {
+    width: 30vw;
+    height: 25vh;
+}
+
+.fancyFont {
+    font-family: "Roboto";
+    font-variant: small-caps;
+    font-weight: 300px;
+}
+
+
