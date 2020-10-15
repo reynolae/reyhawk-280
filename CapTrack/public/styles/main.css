@@ -10,6 +10,9 @@ body {
 nav .dropdown-item {
     width: 250px;
 }
+nav .dropdown:hover {
+    transform: translateY(2px);
+}
 
 .lower {
     top: 56px;
@@ -26,7 +29,7 @@ nav .dropdown-item {
     justify-content: center;
     text-align: center;
     padding-top: 25px;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
     text-shadow: 2px 2px gray;
     font-size: 6em;
 }
@@ -34,11 +37,12 @@ nav .dropdown-item {
 .main-icon {
     text-align: center;
     font-size: 30px;
+    margin: 25px 0;
 }
 
 #mainPage img {
-    width: 30vw;
-    height: 25vh;
+    width: 13vw;
+    height: 13vw;
 }
 
 .fancyFont {
@@ -47,4 +51,34 @@ nav .dropdown-item {
     font-weight: 300px;
 }
 
+#mainPage img:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+@media only screen and (max-width: 600px) {
+    .main-icon {
+        font-size: 25px;
+    }
+}
+
+@media only screen and (max-width: 792px) {
+    #mainPage .row {
+        margin-top: 0px;
+    }
+    #mainPage img {
+        width: 30vw;
+        height: 30vw;
+    }
+}
+
+@media only screen and (max-width: 1035px) {
+    .main-icon {
+        margin: 25px 0;
+    }
+    #mainPage img {
+        width: 20vw;
+        height: 20vw;
+    }
+}
 
