@@ -32,10 +32,23 @@ nav .dropdown:hover {
     padding-bottom: 10px;
     text-shadow: 2px 2px gray;
     font-size: 6em;
+    animation-name: fadein;
+    animation-duration: 2s;
+}
+@keyframes fadein {
+    from {
+        opacity: 0;
+        transform: translateY(7px);
+    }
+    to {
+        opacity: 1;
+        /* transform: translateY(5px) */
+    }
 }
 
 .main-icon {
     text-align: center;
+    text-shadow: 1.4px 1.4px gray;
     font-size: 30px;
     margin: 25px 0;
 }
