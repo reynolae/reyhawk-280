@@ -154,10 +154,38 @@ nav .dropdown:hover {
 /* Getting Started Page */
 #gettingStartedTitle {
     text-align: center;
+    font-size: 2em;
 }
 
 #gettingStartedPage {
     margin-top: 75px;
+}
+
+#streetCap {
+    height: 100px;
+}
+
+@media only screen and (min-width: 770px) {
+    #streetCap {
+        height: 150px;
+    }
+}
+
+#footerImageContainer {
+    height: 75px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    bottom: 10px;
+    position: relative;
+
+}
+
+#footerImage {
+    height: 200px;
+    margin: auto;
+    max-width: 100%;
+    display: block;
 }
 
 
