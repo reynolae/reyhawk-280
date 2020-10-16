@@ -101,6 +101,8 @@ nav .dropdown:hover {
 
 
 
+
+
 /* mycollection */
 
 .capCard img {
@@ -144,3 +146,18 @@ nav .dropdown:hover {
         height: 100px;
     }
 }
+
+
+
+
+
+/* Getting Started Page */
+#gettingStartedTitle {
+    text-align: center;
+}
+
+#gettingStartedPage {
+    margin-top: 75px;
+}
+
+
