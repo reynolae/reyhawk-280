@@ -21,6 +21,10 @@ nav .dropdown:hover {
 }
 
 .page-container {
+    margin-top: 150px;
+}
+
+#mainPage {
     margin-top: 75px;
 }
 
@@ -95,3 +99,48 @@ nav .dropdown:hover {
     }
 }
 
+
+
+/* mycollection */
+
+.capCard img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline;
+}
+
+.capCard {
+    margin-bottom: 8px;
+}
+
+#capsListContainer {
+    column-count: 3;
+    column-gap: 5px;
+}
+
+/* Max-width is uncertain */
+@media screen and (max-width: 1200px) {
+    #capsListContainer {
+        column-count: 2;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    #capsListContainer {
+        column-count: 1;
+    }
+    .capCard img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        display: inline;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .capCard img {
+        width: 100px;
+        height: 100px;
+    }
+}

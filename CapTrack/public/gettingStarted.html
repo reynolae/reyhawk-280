@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+  <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <title>CapTrack</title>
+</head>
+
+<body class="fancyFont">
+  <!-- Second nav -->
+  <nav class="navbar navbar-dark fixed-top lower">
+  </nav>
+
+  <!-- First Nav w/ title -->
+  <nav class="navbar navbar-dark fixed-top">
+    <!-- Dropdown navigation -->
+    <div class="dropdown pull-right">
+      <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        <i class="material-icons">menu</i>
+      </button>
+      <div class="dropdown-menu" aria-labelledby="lr1">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+          <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
+          <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+          <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
+          <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
+          <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
+        <div class="dropdown-divider"></div>
+          <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+          <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
+        <button class="dropdown-item" type="button" data-toggle="modal">
+          <i class="material-icons">supervisor_account</i>&nbsp;&nbsp;&nbsp;Public Collection</button>
+        <button class="dropdown-item" type="button" data-toggle="modal">
+          <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Nav text -->
+    <a class="navbar-brand" href="#">Home</a>
+    <span>&nbsp;</span>
+    <span>&nbsp;</span>
+    <span>&nbsp;</span>
+    <span>&nbsp;</span>
+    <span>&nbsp;</span>
+    <span>&nbsp;</span>
+    <span class="navbar-brand">Guest</span>
+  </nav>
+
+  <div id="mainPage" class="container page-container">
+
+  </div>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/popper.js"></script>
+  <script src="scripts/bootstrap-material-design.js"></script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
+  <script src="/__/firebase/7.18.0/firebase-app.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
+  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+
+</html>
