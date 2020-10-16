@@ -10,15 +10,18 @@
   <title>CapTrack</title>
 </head>
 
-<body class="fancyFont">
+<body>
   <!-- Second nav -->
-  <nav class="navbar navbar-dark fixed-top lower justify-content-end">
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">add</i></button>
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">delete</i></button>
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">more_vert</i></button>
+  <nav class="navbar navbar-dark fixed-top lower">
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" onclick="window.location.href='mycollection.html'">
+      <i class="material-icons">arrow_back</i></button>
+
+    <div>
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+        <i class="material-icons">edit</i></button>
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+        <i class="material-icons">delete</i></button>
+    </div>
 
   </nav>
 
@@ -53,79 +56,44 @@
     </div>
 
     <!-- Nav text -->
-    <a class="navbar-brand" href="/">My Collection</a>
+    <a class="navbar-brand fancyFont" href="/">Details</a>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">search</i></button>
+    <span>&nbsp;</span>
   </nav>
 
-  <div id="myCollectionPage" class="container page-container">
-    <div id='capsListContainer'>
-      <!-- cap card -->
-      <div class="capCard row">
-        <div class="input-group mb-3 col-1">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <input type="checkbox" aria-label="Checkbox for following text input">
-            </div>
-          </div>
-        </div>
-        <div class="col-3">
-          <img src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap" onclick="window.location.href='details.html'">
-        </div>
-        <div class="col-8">
-          <h5>Bottle cap name</h5>
-          <span><strong>Quality</strong></span>
-          <br>
-          <span>Description</span>
-        </div>
-      </div>
-
-      <!-- cap card -->
-      <div class="capCard row">
-        <div class="input-group mb-3 col-1">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <input type="checkbox" aria-label="Checkbox for following text input">
-            </div>
-          </div>
-        </div>
-        <div class="col-3">
-          <img src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
-        </div>
-        <div class="col-8">
-          <h5>Bottle cap name</h5>
-          <span><strong>Quality</strong></span>
-          <br>
-          <span>Description</span>
-        </div>
-      </div>
-
-      <!-- cap card -->
-      <div class="capCard row">
-        <div class="input-group mb-3 col-1">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <input type="checkbox" aria-label="Checkbox for following text input">
-            </div>
-          </div>
-        </div>
-        <div class="col-3">
-          <img src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
-        </div>
-        <div class="col-8">
-          <h5>Bottle cap name</h5>
-          <span><strong>Quality</strong></span>
-          <br>
-          <span>Description</span>
-        </div>
-      </div>
-
+  <div id="detailsPage" class="container page-container">
+    <div id='capContainer'>
+      <img ALIGN="right" src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
+      <br CLEAR="left">
+      <span class="detailComp fancyFont">Drink / Company name:</span>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDrinkName">Name Here</span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Quality:&nbsp;&nbsp;&nbsp;</span>
+      <span id="detailQuality"><strong>Poor</strong></span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Location:&nbsp;&nbsp;&nbsp;</span>
+      <span id="detailLocation">Place Here</span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Date Found:&nbsp;&nbsp;&nbsp;</span>
+      <span id="detailDate">Time Here</span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Description:</span>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDescription">More details</span>
     </div>
 
   </div>
