@@ -101,6 +101,26 @@ nav .dropdown:hover {
 
 
 
+/* Sign in/up */
+
+#signInPage .btn {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+}
+
+#signInPage .darkText {
+    color: black;
+}
+
+#signUpPage .btn {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+}
+
+
+
 
 
 /* mycollection */

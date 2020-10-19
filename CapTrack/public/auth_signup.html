@@ -24,53 +24,63 @@
         <i class="material-icons">menu</i>
       </button>
       <div class="dropdown-menu" aria-labelledby="lr1">
-        <button id="homeNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
-        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
           <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
-        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
           <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
-        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-          <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+          <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
-        <button id="isPublicNav" class="dropdown-item" type="button" data-toggle="modal">
+        <button class="dropdown-item" type="button" data-toggle="modal">
           <i class="material-icons">supervisor_account</i>&nbsp;&nbsp;&nbsp;Public Collection</button>
-        <button id="signInToggleNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='auth_signin.html'">
-          <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign In</button>
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+          <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign Out</button>
       </div>
     </div>
 
     <!-- Nav text -->
-    <a class="navbar-brand" href="#">Home</a>
+    <a class="navbar-brand" href="#">Sign Up</a>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
-    <span class="navbar-brand">Guest</span>
+    <span>&nbsp;</span>
   </nav>
 
-  <div id="mainPage" class="container page-container">
-    <h1 class="fancyFont" id="titleText">CapTrack</h1>
-    <div class="row">
-      <div class="col-6 col-lg-3 main-icon"><a href="myCollection.html"><img src="https://openclipart.org/download/416/johnny-automatic-bottle-cap-1.svg" alt="bottle caps"></a>
-        <div>My Collection</div>
-      </div>
-      <div class="col-6 col-lg-3 main-icon"><a href="explore.html"><img src="https://openclipart.org/download/29983/globe%20fertig.svg" alt="globe"></a>
-        <div>Explore</div>
-      </div>
-      <div class="col-6 col-lg-3 main-icon"><a href="gettingStarted.html"><img src="https://openclipart.org/download/265238/ChequeredFlag.svg" alt="start line flag"></a>
-        <div>Getting Started</div>
-      </div>
-      <div class="col-6 col-lg-3 main-icon"><a href="stats.html"><img src="https://openclipart.org/download/303264/1529054331.svg" alt="graph"></a>
-        <div>Statistics</div>
-      </div>
+  <div id="signUpPage" class="container page-container">
+
+    <button id="switchtoSignUpButton" type="button" class="btn btn-primary" onclick="window.location.href='auth_signin.html'">Already have an Account?</button>
+    <div class="form-group">
+      <label for="inputUsername" class="bmd-label-floating darkText">Enter your username:</label>
+      <input type="username" class="form-control" id="inputUsername">
     </div>
+    <div class="form-group">
+      <label for="inputPassword" class="bmd-label-floating">Enter your password:</label>
+      <input type="password" class="form-control" id="inputPassword">
+    </div>
+    <br>
+    <br>
+    <div class="switch">
+      <label>
+        Public Collection?
+        <input type="checkbox">
+      </label>
+    </div>
+    <div>This can be changed later</div>
+    <br>
+    <button id="createAccountButton" type="button" class="btn btn-outline">Create Account</button>
+    <br>
+    <br>
+    <button id="cancelButton" type="button" class="btn">Cancel</button>
+    
 
   </div>
   <script src="scripts/jquery.min.js"></script>

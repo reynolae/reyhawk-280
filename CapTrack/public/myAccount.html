@@ -10,9 +10,19 @@
   <title>CapTrack</title>
 </head>
 
-<body class="fancyFont">
+<body>
   <!-- Second nav -->
   <nav class="navbar navbar-dark fixed-top lower">
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" onclick="window.location.href='/'">
+      <i class="material-icons">arrow_back</i></button>
+
+    <div>
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+        <i class="material-icons">edit</i></button>
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+        <i class="material-icons">delete</i></button>
+    </div>
+
   </nav>
 
   <!-- First Nav w/ title -->
@@ -26,26 +36,27 @@
       <div class="dropdown-menu" aria-labelledby="lr1">
         <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='gettingStarted.html'">
           <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
         <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
           <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
         <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-          <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
         <button class="dropdown-item" type="button" data-toggle="modal">
           <i class="material-icons">supervisor_account</i>&nbsp;&nbsp;&nbsp;Public Collection</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <button class="dropdown-item" type="button" data-toggle="modal">
           <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign Out</button>
       </div>
     </div>
 
     <!-- Nav text -->
-    <a class="navbar-brand" href="#">Sign In</a>
+    <a class="navbar-brand fancyFont" href="/">My Account</a>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
@@ -55,25 +66,29 @@
     <span>&nbsp;</span>
   </nav>
 
-  <div id="signInPage" class="container page-container">
-
-    <button id="switchtoSignUpButton" type="button" class="btn btn-primary" onclick="window.location.href='auth_signup.html'">Don't have an Account?</button>
-    <div class="form-group">
-      <label for="inputUsername" class="bmd-label-floating">Enter your username:</label>
-      <input type="username" class="form-control" id="inputUsername">
+  <div id="detailsPage" class="container page-container">
+    <div id='capContainer'>
+      <img ALIGN="right" src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="example user pic">
+      <br CLEAR="left">
+      <span class="detailComp fancyFont">Username:</span>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="usernameText">Name here</span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Your collection is:&nbsp;&nbsp;&nbsp;</span>
+      <span id="isPublicText"><strong>Public</strong></span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont"># of Caps:&nbsp;&nbsp;&nbsp;</span>
+      <span id="numCapsText">###</span>
+      <br>
+      <br>
+      <br>
+      <span class="detailComp fancyFont">Joined on:&nbsp;&nbsp;&nbsp;</span>
+      <span id="detailDate">Time Here</span>
     </div>
-    <div class="form-group">
-      <label for="inputPassword" class="bmd-label-floating">Enter your password:</label>
-      <input type="password" class="form-control" id="inputPassword">
-    </div>
-    <br>
-    <br>
-    <br>
-    <button id="signInButton" type="button" class="btn btn-outline">Sign in</button>
-    <br>
-    <br>
-    <button id="cancelButton" type="button" class="btn">Cancel</button>
-    
 
   </div>
   <script src="scripts/jquery.min.js"></script>
