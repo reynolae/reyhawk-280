@@ -17,9 +17,9 @@
       <i class="material-icons">arrow_back</i></button>
 
     <div>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#editCapDialog">
         <i class="material-icons">edit</i></button>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#deleteCapDialog">
         <i class="material-icons">delete</i></button>
     </div>
 
@@ -97,6 +97,69 @@
     </div>
 
   </div>
+
+  <!-- Modals -->
+  <div class="modal fade" id="editCapDialog" tabindex="-1" role="dialog" aria-labelledby="Edit cap dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit this cap</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group ">
+            <div>Drink/Company Name:</div>
+            <input type="text" class="form-control" id="drinkName" placeholder="">
+          </div>
+          <div class="form-group bmd-form-group">
+            <div>Condition:</div>
+            <!-- Change to radio buttons -->
+            <input type="text" class="form-control" id="inputCondition" placeholder="">
+          </div>
+          <div class="form-group ">
+            <div>Location:</div>
+            <input type="text" class="form-control" id="location" placeholder="">
+          </div>
+          <div class="form-group ">
+            <div>Date Found:</div>
+            <input type="text" class="form-control" id="dateFound" placeholder="">
+          </div>
+          <div class="form-group ">
+            <div>Add photo:</div>
+            <!-- Change from text input to option to upload photo from files -->
+            <input type="text" class="form-control" id="addPhoto" placeholder="">
+          </div>
+          <div class="form-group ">
+            <div>Description:</div>
+            <input type="text" class="form-control" id="description" placeholder="">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitEditCap" type="button" class="btn btn-primary" data-dismiss="modal">UPDATE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hook up check boxes to delete button -->
+  <!-- Maybe show which caps are selected on dialog? -->
+  <div class="modal fade" id="deleteCapDialog" tabindex="-1" role="dialog" aria-labelledby="Delete cap dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Warning</h5>
+        </div>
+        <div class="modal-body">
+          <div>Are you sure you want to delete this cap from your collection?</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitDeleteCap" type="button" class="btn btn-primary" data-dismiss="modal">DELETE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
