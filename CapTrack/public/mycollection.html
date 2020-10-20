@@ -15,7 +15,7 @@
   <nav class="navbar navbar-dark fixed-top lower justify-content-end">
     <button id="addButton" class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#addCapDialog">
       <i class="material-icons">add</i></button>
-    <button id="deleteButton" class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+    <button id="deleteButton" class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#deleteCapDialog">
       <i class="material-icons">delete</i></button>
     <button id="sortButton" class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
       <i class="material-icons">more_vert</i></button>
@@ -167,6 +167,25 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
           <button id="submitAddCap" type="button" class="btn btn-primary" data-dismiss="modal">CREATE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Hook up check boxes to delete button -->
+  <!-- Maybe show which caps are selected on dialog? -->
+  <div class="modal fade" id="deleteCapDialog" tabindex="-1" role="dialog" aria-labelledby="Delete cap dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Warning</h5>
+        </div>
+        <div class="modal-body">
+          <div>Are you sure you want to delete cap(s) from your collection?</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitDeleteCap" type="button" class="btn btn-primary" data-dismiss="modal">DELETE</button>
         </div>
       </div>
     </div>
