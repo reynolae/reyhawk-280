@@ -13,13 +13,16 @@
 <body>
   <!-- Second nav -->
   <nav class="navbar navbar-dark fixed-top lower">
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" onclick="window.location.href='/'">
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false"
+      onclick="window.location.href='/'">
       <i class="material-icons">arrow_back</i></button>
 
     <div>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+        data-target="#editAccountDialog">
         <i class="material-icons">edit</i></button>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+        data-target="#deleteAccountDialog">
         <i class="material-icons">delete</i></button>
     </div>
 
@@ -36,7 +39,7 @@
       <div class="dropdown-menu" aria-labelledby="lr1">
         <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='mycollection.html'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
         <button class="dropdown-item" type="button" data-toggle="modal"
           onclick="window.location.href='gettingStarted.html'">
@@ -46,7 +49,7 @@
         <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
         <button class="dropdown-item" type="button" data-toggle="modal">
           <i class="material-icons">supervisor_account</i>&nbsp;&nbsp;&nbsp;Public Collection</button>
@@ -68,7 +71,8 @@
 
   <div id="detailsPage" class="container page-container">
     <div id='capContainer'>
-      <img ALIGN="right" src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="example user pic">
+      <img ALIGN="right" src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png"
+        alt="example user pic">
       <br CLEAR="left">
       <span class="detailComp fancyFont">Username:</span>
       <br>
@@ -91,6 +95,57 @@
     </div>
 
   </div>
+
+  <!-- Modals -->
+  <div class="modal fade" id="editAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Edit account dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit your account</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group ">
+            <div>Public Collection?</div>
+            <!-- Add switch -->
+            <input type="text" class="form-control" id="publicCollection" placeholder="">
+          </div>
+          <div class="form-group bmd-form-group">
+            <div>Change Password?</div>
+            <input type="text" class="form-control" id="'changePassword'" placeholder="">
+          </div>
+          <div class="form-group ">
+            <div>Add photo:</div>
+            <!-- Change from text input to option to upload photo from files -->
+            <input type="text" class="form-control" id="addPhoto" placeholder="">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+            <button id="submitEditAccount" type="button" class="btn btn-primary" data-dismiss="modal">UPDATE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Delete account dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Warning</h5>
+        </div>
+        <div class="modal-body">
+          <div>Are you sure you want to delete your account?</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitDeleteAccount" type="button" class="btn btn-primary" data-dismiss="modal">DELETE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>

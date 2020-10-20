@@ -13,13 +13,16 @@
 <body>
   <!-- Second nav -->
   <nav class="navbar navbar-dark fixed-top lower">
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" onclick="window.location.href='mycollection.html'">
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false"
+      onclick="window.location.href='mycollection.html'">
       <i class="material-icons">arrow_back</i></button>
 
     <div>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#editCapDialog">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+        data-target="#editCapDialog">
         <i class="material-icons">edit</i></button>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-target="#deleteCapDialog">
+      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+        data-target="#deleteCapDialog">
         <i class="material-icons">delete</i></button>
     </div>
 
@@ -68,7 +71,8 @@
 
   <div id="detailsPage" class="container page-container">
     <div id='capContainer'>
-      <img ALIGN="right" src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
+      <img ALIGN="right" src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
+        alt="example cap">
       <br CLEAR="left">
       <span class="detailComp fancyFont">Drink / Company name:</span>
       <br>
@@ -99,7 +103,8 @@
   </div>
 
   <!-- Modals -->
-  <div class="modal fade" id="editCapDialog" tabindex="-1" role="dialog" aria-labelledby="Edit cap dialog" aria-hidden="true">
+  <div class="modal fade" id="editCapDialog" tabindex="-1" role="dialog" aria-labelledby="Edit cap dialog"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -113,20 +118,57 @@
           <div class="form-group bmd-form-group">
             <div>Condition:</div>
             <!-- Change to radio buttons -->
-            <input type="text" class="form-control" id="inputCondition" placeholder="">
+            <br>
+
+            <div id="radioButtons">
+              <div class="checkboxgroup">
+                <input type="radio" name="radio" id="my_radio_button_id1" />
+                <label for="my_radio_button_id1">Bad</label>
+              </div>
+              <div class="checkboxgroup">
+                <input type="radio" name="radio" id="my_radio_button_id2" />
+                <label for="my_radio_button_id2">Poor</label>
+              </div>
+              <div class="checkboxgroup">
+                <input type="radio" name="radio" id="my_radio_button_id3" />
+                <label for="my_radio_button_id3">Fair</label>
+              </div>
+              <div class="checkboxgroup">
+                <input type="radio" name="radio" id="my_radio_button_id3" />
+                <label for="my_radio_button_id3">Good</label>
+              </div>
+              <div class="checkboxgroup">
+                <input type="radio" name="radio" id="my_radio_button_id3" />
+                <label for="my_radio_button_id3">Great</label>
+              </div>
+            </div>
           </div>
           <div class="form-group ">
             <div>Location:</div>
             <input type="text" class="form-control" id="location" placeholder="">
           </div>
-          <div class="form-group ">
-            <div>Date Found:</div>
-            <input type="text" class="form-control" id="dateFound" placeholder="">
-          </div>
-          <div class="form-group ">
-            <div>Add photo:</div>
-            <!-- Change from text input to option to upload photo from files -->
-            <input type="text" class="form-control" id="addPhoto" placeholder="">
+          <div id="dateImageGroup">
+            <div id="dateGroup" class="form-group ">
+              <div>Date Found:</div>
+              <input type="date" id="inputDateFound" value="2020-10-20" min="1900-01-01" max="10-20-2020">
+            </div>
+            <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div id="imageGroup" class="form-group ">
+              <div style="height:0px;overflow:hidden">
+                <input type="file" id="fileInput" name="fileInput" />
+              </div>
+              <img id="inputImage"
+                src="https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png"
+                alt="Add Image" onclick="chooseFile();">
+              <!-- move the script to main.js -->
+              <script>
+                function chooseFile() {
+                  $("#fileInput").click();
+                }
+              </script>
+            </div>
           </div>
           <div class="form-group ">
             <div>Description:</div>
@@ -143,7 +185,8 @@
 
   <!-- Hook up check boxes to delete button -->
   <!-- Maybe show which caps are selected on dialog? -->
-  <div class="modal fade" id="deleteCapDialog" tabindex="-1" role="dialog" aria-labelledby="Delete cap dialog" aria-hidden="true">
+  <div class="modal fade" id="deleteCapDialog" tabindex="-1" role="dialog" aria-labelledby="Delete cap dialog"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
