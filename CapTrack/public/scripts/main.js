@@ -29,8 +29,21 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
+function getCheckedCapsId() {
+	let ids = []
+	var checkboxes = document.querySelectorAll("input[type='checkbox']");
+	for (let i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked == true) {
+			ids.push(checkboxes[i].value)
+		}
+	}
+	return ids;
+}
+
 rhit.CollectionPageController = class {
 	constructor() {
+
+		// Add cap listeners
 		document.querySelector("#submitAddCap").addEventListener("click", (event) => {
 			const drinkName = document.querySelector("#inputDrinkName").value;
 			const quality = document.querySelector('input[name="quality"]:checked').value;
@@ -41,7 +54,6 @@ rhit.CollectionPageController = class {
 			const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
 			rhit.capsManager.add(drinkName, quality, location, dateFound, description, pic);
 		});
-
 		$("#addCapDialog").on("show.bs.modal", (event) => {
 			// pre animation
 			document.querySelector("#inputDrinkName").value = "";
@@ -54,18 +66,34 @@ rhit.CollectionPageController = class {
 			document.querySelector("#inputDescription").value = "";
 			// document.querySelector("#fileInput").value = "";
 		});
-
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
 			// post animation
 			document.querySelector("#inputDrinkName").focus();
 		});
+
+
+		// Delete cap listeners
+		document.querySelector("#deleteButton").addEventListener("click", (event) => {
+			let ids = getCheckedCapsId();
+			let numCapsSelected = ids.length;
+			document.querySelector("#deleteCapText").innerHTML = `Are you sure you want to delete cap(s) from your collection? <br> You have selected ${numCapsSelected} caps`;
+		});
+		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
+			let ids = getCheckedCapsId();
+			rhit.capsManager.delete(ids);
+			// var checkboxes = document.querySelectorAll("input[type='checkbox']");
+			// for (let i = 0; i < checkboxes.length; i++) {
+			// 	checkboxes[i].checked = false;
+			// }
+		});
+
 
 		// start listening
 		rhit.capsManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
 		const newList = htmlToElement('<div id="capsListContainer"></div>')
-		console.log(rhit.capsManager.length, "length?");
+		// console.log(rhit.capsManager.length, "length?");
 		for (let i = 0; i < rhit.capsManager.length; i++) {
 			const cap = rhit.capsManager.getCapAtIndex(i);
 			const newCard = this._createCard(cap);
@@ -87,7 +115,7 @@ rhit.CollectionPageController = class {
         <div class="input-group mb-3 col-1">
           <div class="input-group-prepend">
             <div class="input-group-text">
-              <input type="checkbox" id="${cap.id}" aria-label="Checkbox for following text input">
+              <input type="checkbox" value="${cap.id}" aria-label="checkbox for cap">
             </div>
           </div>
         </div>
@@ -111,7 +139,7 @@ rhit.CapsManager = class {
 		this._unsubscribe = null;
 	}
 	add(drinkName, quality, location, dateFound, description, pic) {
-		console.log("adding cap now!");
+		// console.log("adding cap now!");
 		this._ref.add({
 				[rhit.FB_KEY_DRINK_NAME]: drinkName,
 				[rhit.FB_KEY_QUALITY]: quality,
@@ -127,11 +155,22 @@ rhit.CapsManager = class {
 				console.log("Error adding document: ", error);
 			});
 	}
-	delete(id) {}
+	delete(ids) {
+		// console.log("One cap slected has id", ids[0]);
+		if(!!ids.length){
+			for(let i = 0; i < ids.length; i++) {
+				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
+				ref.delete();
+			}
+		} else {
+			console.log("No caps to delete");
+		}
+
+	}
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
-			console.log("caps update");
+			// console.log("caps update");
 			this._documentSnapshots = querySnapshot.docs;
 			console.log(this._documentSnapshots);
 			changeListener();
