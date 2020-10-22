@@ -10,10 +10,12 @@ body {
 nav .dropdown-item {
     width: 250px;
 }
-nav .dropdown:hover {
+/* nav .dropdown :hover {
     transform: translateY(2px);
+} */
+.dropdown-menu-right {
+    left: -220px;
 }
-
 .lower {
     top: 56px;
     background-color: #284B63;

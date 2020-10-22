@@ -88,6 +88,18 @@ rhit.CollectionPageController = class {
 		});
 
 
+		// Sorting listeners
+		document.querySelector("#sortCapsAlph").addEventListener("click", (event) => {
+			rhit.capsManager.setquery("Alph");
+		});
+		document.querySelector("#sortCapsDate").addEventListener("click", (event) => {
+			rhit.capsManager.setquery("Date");
+		});
+		document.querySelector("#sortCapsQuality").addEventListener("click", (event) => {
+			rhit.capsManager.setquery("Quality");
+		});
+
+
 		// start listening
 		rhit.capsManager.beginListening(this.updateView.bind(this))
 	}
@@ -137,6 +149,10 @@ rhit.CapsManager = class {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
+		this._queryDate =  this._ref.orderBy(rhit.FB_KEY_DATE_FOUND,"desc").limit(50);
+		this._queryName = this._ref.orderBy(rhit.FB_KEY_DRINK_NAME).limit(50);
+		this._queryQuality = this._ref.orderBy(rhit.FB_KEY_QUALITY).limit(50);
+		this.queryType = "Date"
 	}
 	add(drinkName, quality, location, dateFound, description, pic) {
 		// console.log("adding cap now!");
@@ -168,9 +184,20 @@ rhit.CapsManager = class {
 
 	}
 	beginListening(changeListener) {
-		let query = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
+		var query = this._queryDate;
+		if(this.queryType == "Alph") {
+			query = this._queryName;
+		}
+		if(this.queryType == "Quality") {
+			query = this._queryQuality;
+		}
+		if(this.queryType == "Date") {
+			query = this._queryDate;
+		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
-			// console.log("caps update");
+			console.log("Query type",this.queryType);
+			console.log("Query",this._query);
+			console.log("caps update");
 			this._documentSnapshots = querySnapshot.docs;
 			console.log(this._documentSnapshots);
 			changeListener();
@@ -181,6 +208,19 @@ rhit.CapsManager = class {
 	}
 	get length() {
 		return this._documentSnapshots.length
+	}
+
+	setquery(orderType) {
+		this.queryType=orderType;
+		// if(orderType === "Alph") {
+		// 	this._query = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).orderBy(rhit.FB_KEY_DRINK_NAME).limit(50); 
+		// }
+		// if(orderType === "Date") {
+		// 	this._query = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50); 
+		// }
+		// if(orderType === "Quality") {
+		// 	this._query = this._ref.orderBy(rhit.FB_KEY_QUALITY, "desc").limit(50); 
+		// }
 	}
 	getCapAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
