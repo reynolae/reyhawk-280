@@ -91,12 +91,18 @@ rhit.CollectionPageController = class {
 		// Sorting listeners
 		document.querySelector("#sortCapsAlph").addEventListener("click", (event) => {
 			rhit.capsManager.setquery("Alph");
+			rhit.capsManager.stopListening();
+			rhit.capsManager.beginListening(this.updateView.bind(this));
 		});
 		document.querySelector("#sortCapsDate").addEventListener("click", (event) => {
 			rhit.capsManager.setquery("Date");
+			rhit.capsManager.stopListening();
+			rhit.capsManager.beginListening(this.updateView.bind(this));
 		});
 		document.querySelector("#sortCapsQuality").addEventListener("click", (event) => {
 			rhit.capsManager.setquery("Quality");
+			rhit.capsManager.stopListening();
+			rhit.capsManager.beginListening(this.updateView.bind(this));
 		});
 
 
@@ -121,6 +127,7 @@ rhit.CollectionPageController = class {
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
+		
 	}
 	_createCard(cap) {
 		return htmlToElement(`<div class="capCard row">
@@ -151,8 +158,8 @@ rhit.CapsManager = class {
 		this._unsubscribe = null;
 		this._queryDate =  this._ref.orderBy(rhit.FB_KEY_DATE_FOUND,"desc").limit(50);
 		this._queryName = this._ref.orderBy(rhit.FB_KEY_DRINK_NAME).limit(50);
-		this._queryQuality = this._ref.orderBy(rhit.FB_KEY_QUALITY).limit(50);
-		this.queryType = "Date"
+		this._queryQuality = this._ref.orderBy(rhit.FB_KEY_QUALITY,"desc").limit(50);
+		this.queryType = "Date";
 	}
 	add(drinkName, quality, location, dateFound, description, pic) {
 		// console.log("adding cap now!");
@@ -185,21 +192,19 @@ rhit.CapsManager = class {
 	}
 	beginListening(changeListener) {
 		var query = this._queryDate;
-		if(this.queryType == "Alph") {
+		if(this.queryType === "Alph") {
 			query = this._queryName;
 		}
-		if(this.queryType == "Quality") {
+		if(this.queryType === "Quality") {
 			query = this._queryQuality;
 		}
-		if(this.queryType == "Date") {
+		if(this.queryType === "Date") {
 			query = this._queryDate;
 		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
-			console.log("Query type",this.queryType);
-			console.log("Query",this._query);
-			console.log("caps update");
 			this._documentSnapshots = querySnapshot.docs;
 			console.log(this._documentSnapshots);
+			this.stopListening();
 			changeListener();
 		});
 	}
@@ -212,9 +217,6 @@ rhit.CapsManager = class {
 
 	setquery(orderType) {
 		this.queryType=orderType;
-		// if(orderType === "Alph") {
-		// 	this._query = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).orderBy(rhit.FB_KEY_DRINK_NAME).limit(50); 
-		// }
 		// if(orderType === "Date") {
 		// 	this._query = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50); 
 		// }
@@ -241,7 +243,7 @@ rhit.Caps = class {
 	constructor(id, drinkName, quality, location, dateFound, description, pic) {
 		this.id = id;
 		this.drinkName = drinkName;
-		this.quality = quality;
+		this.quality = quality.slice(2,quality.length);
 		this.location = location;
 		this.dateFound = dateFound;
 		this.description = description;
