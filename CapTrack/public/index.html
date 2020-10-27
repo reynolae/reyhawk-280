@@ -37,14 +37,14 @@
         <div class="dropdown-divider"></div>
           <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
-        <div id="isPublicNav" class="dropdown-item switch">
+        <div id="isPublicNav" class="dropdown-item">
           <i class="material-icons"><!--supervisor_account--></i>Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <!-- <span class="switch"> -->
+          <span class="switch">
             <label>
-              <input type="checkbox" checked>
+              <input id="publicSwitch" type="checkbox" checked>
               
             </label>
-          <!-- </span> -->
+          </span>
         </div>
 
         <button id="signInToggleNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='auth_signin.html'">
