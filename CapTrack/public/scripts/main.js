@@ -283,7 +283,7 @@ rhit.DetailsPageController = class {
 		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
 			rhit.singleCapManager.delete().then(function () {
 				console.log("Document successfully deleted!");
-				window.location.href = "/mycollection.html";
+				window.location.href = "mycollection.html";
 			}).catch(function(error) {
 				console.error("Error removing document:", error);
 			});;
