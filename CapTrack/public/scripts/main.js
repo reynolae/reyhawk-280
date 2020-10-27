@@ -61,6 +61,7 @@ rhit.CollectionPageController = class {
 			for (var i = 0; i < quality.length; i++) {
 				quality[i].checked = false;
 			}
+			quality[2].checked = true;
 			document.querySelector("#inputLocation").value = "";
 			document.querySelector("#inputDateFound").value = "";
 			document.querySelector("#inputDescription").value = "";
