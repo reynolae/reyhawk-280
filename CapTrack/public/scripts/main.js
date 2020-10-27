@@ -20,6 +20,7 @@ rhit.FB_KEY_PIC = "pic";
 // rhit.FB_KEY_USER ="user";
 rhit.capsManager = null;
 rhit.singleCapManager = null;
+rhit.signInUpManager = null;
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -363,26 +364,101 @@ rhit.SingleCapManager = class {
 	}
 }
 
+rhit.SignInPageController = class {
+	constructor() {}
+	updatePage() {}
+}
+
+rhit.SignUpPageController = class {
+	constructor() {
+		document.querySelector("#createAccountButton").onclick = (event) => {
+			console.log(`create account for email: ${inputUsername.value} password: ${inputPassword.value}`);
+			firebase.auth().createUserWithEmailAndPassword(inputEmailEl.value, inputPasswordEl.value).catch(function (error) {
+				// Handle Errors here.
+				var errorCode = error.code;
+				var errorMessage = error.message;
+				// ...
+				console.log("Create Account error", errorCode, errorMessage);
+			});
+		};
+	}
+	updatePage() {}
+}
+
+rhit.SignInUpManager = class {
+	constructor() {
+		
+	}
+	beginListening(changeListener) {
+		firebase.auth().onAuthStateChanged((user) => {
+			this._user = user;
+			changeListener();
+		});
+	}
+	signIn() {
+		console.log("TODO: Sign in using Rosefire");
+		Rosefire.signIn("cd92f859-2d52-4d1b-9ea6-fa4668b2941f", (err, rfUser) => {
+			if (err) {
+				console.log("Rosefire error!", err);
+				return;
+			}
+			console.log("Rosefire success!", rfUser);
+			firebase.auth().signInWithCustomToken(rfUser.token).catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				if (errorCode === 'auth/invalid-custom-token') {
+					alert('The token you provided is not valid.');
+				} else {
+					console.error("Custom auth error", errorCode, errorMessage);
+				}
+			});
+		});
+	}
+	signOut() {
+		firebase.auth().signOut().catch((error) => {
+			console.log("Sign out error");
+		});
+	}
+	get isSignedIn() {
+		return !!this._user;
+	}
+	get uid() {
+		return this._user.uid;
+	}
+}
+
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
 	console.log("Ready");
-	if (document.querySelector("#myCollectionPage")) {
-		rhit.capsManager = new rhit.CapsManager();
-		new rhit.CollectionPageController();
-	}
-	if (document.querySelector("#detailsPage")) {
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		const capId = urlParams.get("id");
 
-		if (!capId) {
-			window.location.href = "/"
+	rhit.signInUpManager = new rhit.SignInUpManager();
+	rhit.signInUpManager.beginListening(() => {
+		console.log("isSignedIn =", rhit.SignInUpManager.isSignedIn);
+
+		//Check for redirects
+		//rhit.checkForRedirects();
+
+		// Page initialization
+		//rhit.initializePage();
+		if (document.querySelector("#myCollectionPage")) {
+			rhit.capsManager = new rhit.CapsManager();
+			new rhit.CollectionPageController();
 		}
-		console.log();
-		rhit.singleCapManager = new rhit.SingleCapManager(capId);
-		new rhit.DetailsPageController();
-	}
+		if (document.querySelector("#detailsPage")) {
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			const capId = urlParams.get("id");
+	
+			if (!capId) {
+				window.location.href = "/"
+			}
+			console.log();
+			rhit.singleCapManager = new rhit.SingleCapManager(capId);
+			new rhit.DetailsPageController();
+		}
+	});
+	
 	if(document.querySelector("#myAccountPage")) {
 		
 	}
