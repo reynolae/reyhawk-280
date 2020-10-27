@@ -127,7 +127,7 @@ rhit.CollectionPageController = class {
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
-		
+
 	}
 	_createCard(cap) {
 		return htmlToElement(`<div class="capCard row">
@@ -156,9 +156,9 @@ rhit.CapsManager = class {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
-		this._queryDate =  this._ref.orderBy(rhit.FB_KEY_DATE_FOUND,"desc").limit(50);
+		this._queryDate = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
 		this._queryName = this._ref.orderBy(rhit.FB_KEY_DRINK_NAME).limit(50);
-		this._queryQuality = this._ref.orderBy(rhit.FB_KEY_QUALITY,"desc").limit(50);
+		this._queryQuality = this._ref.orderBy(rhit.FB_KEY_QUALITY, "desc").limit(50);
 		this.queryType = "Date";
 	}
 	add(drinkName, quality, location, dateFound, description, pic) {
@@ -180,8 +180,8 @@ rhit.CapsManager = class {
 	}
 	delete(ids) {
 		// console.log("One cap slected has id", ids[0]);
-		if(!!ids.length){
-			for(let i = 0; i < ids.length; i++) {
+		if (!!ids.length) {
+			for (let i = 0; i < ids.length; i++) {
 				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
 				ref.delete();
 			}
@@ -192,13 +192,13 @@ rhit.CapsManager = class {
 	}
 	beginListening(changeListener) {
 		var query = this._queryDate;
-		if(this.queryType === "Alph") {
+		if (this.queryType === "Alph") {
 			query = this._queryName;
 		}
-		if(this.queryType === "Quality") {
+		if (this.queryType === "Quality") {
 			query = this._queryQuality;
 		}
-		if(this.queryType === "Date") {
+		if (this.queryType === "Date") {
 			query = this._queryDate;
 		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
@@ -216,13 +216,7 @@ rhit.CapsManager = class {
 	}
 
 	setquery(orderType) {
-		this.queryType=orderType;
-		// if(orderType === "Date") {
-		// 	this._query = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50); 
-		// }
-		// if(orderType === "Quality") {
-		// 	this._query = this._ref.orderBy(rhit.FB_KEY_QUALITY, "desc").limit(50); 
-		// }
+		this.queryType = orderType;
 	}
 	getCapAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
@@ -243,7 +237,7 @@ rhit.Caps = class {
 	constructor(id, drinkName, quality, location, dateFound, description, pic) {
 		this.id = id;
 		this.drinkName = drinkName;
-		this.quality = quality.slice(2,quality.length);
+		this.quality = quality.slice(2, quality.length);
 		this.location = location;
 		this.dateFound = dateFound;
 		this.description = description;
@@ -252,24 +246,125 @@ rhit.Caps = class {
 }
 
 rhit.DetailsPageController = class {
-	constructor() {}
-	updateView() {}
+	constructor() {
+		// Add cap listeners
+		document.querySelector("#submitEditCap").addEventListener("click", (event) => {
+			const drinkName = document.querySelector("#inputDrinkName").value;
+			const quality = document.querySelector('input[name="quality"]:checked').value;
+			const location = document.querySelector("#inputLocation").value;
+			const dateFound = document.querySelector("#inputDateFound").value;
+			const description = document.querySelector("#inputDescription").value;
+			// const pic = document.querySelector("#fileInput").value;
+			const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
+			rhit.singleCapManager.edit(drinkName, quality, location, dateFound, description, pic);
+		});
+		$("#editCapDialog").on("show.bs.modal", (event) => {
+			// pre animation
+			document.querySelector("#inputDrinkName").value = rhit.singleCapManager.drinkName;
+			var quality = rhit.singleCapManager.quality;
+			var qualBtns = document.getElementsByName("quality");
+			for (var i = 0; i < qualBtns.length; i++) {
+				if(qualBtns[i].value == quality) {
+					qualBtns[i].checked = true;
+				}
+			}
+			document.querySelector("#inputLocation").value = rhit.singleCapManager.location;
+			document.querySelector("#inputDateFound").value = rhit.singleCapManager.dateFound;
+			document.querySelector("#inputDescription").value = rhit.singleCapManager.description;
+			// document.querySelector("#fileInput").value = rhit.singleCapManager.pic;
+		});
+		$("#addCapDialog").on("shown.bs.modal", (event) => {
+			// post animation
+			document.querySelector("#inputDrinkName").focus();
+		});
+
+
+		// Delete cap listeners
+		document.querySelector("#deleteButton").addEventListener("click", (event) => {
+			let ids = getCheckedCapsId();
+			let numCapsSelected = ids.length;
+			document.querySelector("#deleteCapText").innerHTML = `Are you sure you want to delete cap(s) from your collection? <br> You have selected ${numCapsSelected} caps`;
+		});
+		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
+			let ids = getCheckedCapsId();
+			rhit.capsManager.delete(ids);
+			// var checkboxes = document.querySelectorAll("input[type='checkbox']");
+			// for (let i = 0; i < checkboxes.length; i++) {
+			// 	checkboxes[i].checked = false;
+			// }
+		});
+
+		rhit.singleCapManager.beginListening(this.updateView.bind(this))
+	}
+	updateView() {
+		document.querySelector("#detailDrinkName").innerHTML = rhit.singleCapManager.drinkName;
+		var quality = rhit.singleCapManager.quality
+		document.querySelector("#detailQuality").innerHTML = "<strong>"+quality.slice(2, quality.length)+"<strong>";
+		document.querySelector("#detailLocation").innerHTML = rhit.singleCapManager.location;
+		document.querySelector("#detailDate").innerHTML = rhit.singleCapManager.dateFound;
+		document.querySelector("#detailDescription").innerHTML = rhit.singleCapManager.description;
+	}
 }
 
 rhit.SingleCapManager = class {
-	constructor(id) {
-		this._id = id;
+	constructor(capId) {
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(capId);
 	}
-	edit(drinkName, quality, location, dateFound, description, pic) {}
-	delete() {}
-	beginListening(changeListener) {}
-	stopListening() {}
-	get drinkName() {}
-	get quality() {}
-	get location() {}
-	get dateFound() {}
-	get description() {}
-	get pic() {}
+	edit(drinkName, quality, location, dateFound, description, pic) {
+		this._ref.update({
+			[rhit.FB_KEY_DRINK_NAME]: drinkName,
+			[rhit.FB_KEY_QUALITY]: quality,
+			[rhit.FB_KEY_LOCATION]: location,
+			[rhit.FB_KEY_DATE_FOUND]: dateFound,
+			[rhit.FB_KEY_DESCRIPTION]: description,
+			[rhit.FB_KEY_PIC]: pic,
+		})
+		.then(function () {
+			console.log("Document successfully updated!");
+		})
+		.catch(function (error) {
+			console.log("Error updating document: ", error);
+		});
+	}
+	delete() {
+		this._ref.delete();
+	}
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+				// doc.data() will be undefined in this case
+				console.log("No such document!");
+				// window.location.href="/";
+			}
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+	get drinkName() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DRINK_NAME);
+	}
+	get quality() {
+		return this._documentSnapshot.get(rhit.FB_KEY_QUALITY);
+	}
+	get location() {
+		return this._documentSnapshot.get(rhit.FB_KEY_LOCATION);
+	}
+	get dateFound() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DATE_FOUND);
+	}
+	get description() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DESCRIPTION);
+	}
+	get pic() {
+		return this._documentSnapshot.get(rhit.FB_KEY_PIC);
+	}
 }
 
 /* Main */
@@ -280,6 +375,19 @@ rhit.main = function () {
 		rhit.capsManager = new rhit.CapsManager();
 		new rhit.CollectionPageController();
 	}
+	if (document.querySelector("#detailsPage")) {
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const capId = urlParams.get("id");
+
+		if (!capId) {
+			window.location.href = "/"
+		}
+		console.log();
+		rhit.singleCapManager = new rhit.SingleCapManager(capId);
+		new rhit.DetailsPageController();
+	}
+	
 };
 
 rhit.main();

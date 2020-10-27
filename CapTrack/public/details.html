@@ -21,7 +21,7 @@
       <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
         data-target="#editCapDialog">
         <i class="material-icons">edit</i></button>
-      <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+      <button id="deleteButton" class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
         data-target="#deleteCapDialog">
         <i class="material-icons">delete</i></button>
     </div>
@@ -76,28 +76,28 @@
       <br CLEAR="left">
       <span class="detailComp fancyFont">Drink / Company name:</span>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDrinkName">Name Here</span>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDrinkName"></span>
       <br>
       <br>
       <br>
       <span class="detailComp fancyFont">Quality:&nbsp;&nbsp;&nbsp;</span>
-      <span id="detailQuality"><strong>Poor</strong></span>
+      <span id="detailQuality"><strong></strong></span>
       <br>
       <br>
       <br>
       <span class="detailComp fancyFont">Location:&nbsp;&nbsp;&nbsp;</span>
-      <span id="detailLocation">Place Here</span>
+      <span id="detailLocation"></span>
       <br>
       <br>
       <br>
       <span class="detailComp fancyFont">Date Found:&nbsp;&nbsp;&nbsp;</span>
-      <span id="detailDate">Time Here</span>
+      <span id="detailDate"></span>
       <br>
       <br>
       <br>
       <span class="detailComp fancyFont">Description:</span>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDescription">More details</span>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="detailDescription"></span>
     </div>
 
   </div>
@@ -121,23 +121,23 @@
             <br>
             <div id="radioButtons">
               <div class="checkboxgroup">
-                <input type="radio" name="quality" id="radioBad" value="Bad" />
+                <input type="radio" name="quality" id="radioBad" value="1-Bad" />
                 <label for="radioBad">Bad</label>
               </div>
               <div class="checkboxgroup">
-                <input type="radio" name="quality" id="radioPoor" value="Poor" />
+                <input type="radio" name="quality" id="radioPoor" value="2-Poor" />
                 <label for="radioPoor">Poor</label>
               </div>
               <div class="checkboxgroup">
-                <input type="radio" name="quality" id="radioFair" value="Fair" />
+                <input type="radio" name="quality" id="radioFair" value="3-Fair" />
                 <label for="radioFair">Fair</label>
               </div>
               <div class="checkboxgroup">
-                <input type="radio" name="quality" id="radioGood" value="Good" />
+                <input type="radio" name="quality" id="radioGood" value="4-Good" />
                 <label for="radioGood">Good</label>
               </div>
               <div class="checkboxgroup">
-                <input type="radio" name="quality" id="radioGreat" value="Great" />
+                <input type="radio" name="quality" id="radioGreat" value="5-Great" />
                 <label for="radioGreat">Great</label>
               </div>
             </div>
