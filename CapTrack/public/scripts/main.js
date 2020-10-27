@@ -280,18 +280,13 @@ rhit.DetailsPageController = class {
 
 
 		// Delete cap listeners
-		document.querySelector("#deleteButton").addEventListener("click", (event) => {
-			let ids = getCheckedCapsId();
-			let numCapsSelected = ids.length;
-			document.querySelector("#deleteCapText").innerHTML = `Are you sure you want to delete cap(s) from your collection? <br> You have selected ${numCapsSelected} caps`;
-		});
 		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
-			let ids = getCheckedCapsId();
-			rhit.capsManager.delete(ids);
-			// var checkboxes = document.querySelectorAll("input[type='checkbox']");
-			// for (let i = 0; i < checkboxes.length; i++) {
-			// 	checkboxes[i].checked = false;
-			// }
+			rhit.singleCapManager.delete().then(function () {
+				console.log("Document successfully deleted!");
+				window.location.href = "/mycollection.html";
+			}).catch(function(error) {
+				console.error("Error removing document:", error);
+			});;
 		});
 
 		rhit.singleCapManager.beginListening(this.updateView.bind(this))
