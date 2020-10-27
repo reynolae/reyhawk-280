@@ -276,4 +276,17 @@ nav .dropdown-item {
 }
 
 /* myAccount */
+#myAccountPage img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+#myAccountPage span {
+    font-size: 30px;
+}
+
+#myAccountPage .detailComp {
+    color: rgb(110, 110, 110);
+}
 

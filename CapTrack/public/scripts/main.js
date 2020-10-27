@@ -383,6 +383,9 @@ rhit.main = function () {
 		rhit.singleCapManager = new rhit.SingleCapManager(capId);
 		new rhit.DetailsPageController();
 	}
+	if(document.querySelector("#myAccountPage")) {
+		
+	}
 	
 };
 
