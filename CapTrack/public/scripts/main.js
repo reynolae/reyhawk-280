@@ -10,6 +10,12 @@
 var rhit = rhit || {};
 
 /** globals */
+rhit.FB_COLLECTION_USERS = "users";
+rhit.FB_KEY_DATE_JOINED = "dateJoined";
+rhit.FB_KEY_IS_PUBLIC = "isPublic";
+rhit.FB_KEY_NUM_CAPS = "numCaps";
+rhit.FB_KEY_USERNAME = "username";
+
 rhit.FB_COLLECTION_CAPS = "cap";
 rhit.FB_KEY_LOCATION = "location";
 rhit.FB_KEY_DRINK_NAME = "drinkName";
@@ -372,14 +378,7 @@ rhit.SignInPageController = class {
 rhit.SignUpPageController = class {
 	constructor() {
 		document.querySelector("#createAccountButton").onclick = (event) => {
-			console.log(`create account for email: ${inputUsername.value} password: ${inputPassword.value}`);
-			firebase.auth().createUserWithEmailAndPassword(inputEmailEl.value, inputPasswordEl.value).catch(function (error) {
-				// Handle Errors here.
-				var errorCode = error.code;
-				var errorMessage = error.message;
-				// ...
-				console.log("Create Account error", errorCode, errorMessage);
-			});
+			rhit.signInUpManager.signUp(inputEmail,inputPassword);
 		};
 	}
 	updatePage() {}
@@ -387,31 +386,43 @@ rhit.SignUpPageController = class {
 
 rhit.SignInUpManager = class {
 	constructor() {
-		
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._user = null;
+		this._ref = null;
 	}
 	beginListening(changeListener) {
 		firebase.auth().onAuthStateChanged((user) => {
 			this._user = user;
+			this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user.uid);
 			changeListener();
+			console.log("auth on");
 		});
 	}
 	signIn() {
-		console.log("TODO: Sign in using Rosefire");
-		Rosefire.signIn("cd92f859-2d52-4d1b-9ea6-fa4668b2941f", (err, rfUser) => {
-			if (err) {
-				console.log("Rosefire error!", err);
-				return;
-			}
-			console.log("Rosefire success!", rfUser);
-			firebase.auth().signInWithCustomToken(rfUser.token).catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				if (errorCode === 'auth/invalid-custom-token') {
-					alert('The token you provided is not valid.');
-				} else {
-					console.error("Custom auth error", errorCode, errorMessage);
-				}
-			});
+		
+	}
+	signUp(email,password) {
+		console.log(`create account for email: ${email.value} password: ${password.value}`);
+		firebase.auth().createUserWithEmailAndPassword(email.value, password.value).catch(function (error) {
+			// Handle Errors here.
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			// ...
+			console.log("Create Account error", errorCode, errorMessage);
+		});
+
+		this._ref.add({
+			[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
+			[rhit.FB_KEY_IS_PUBLIC]: true,
+			[rhit.FB_KEY_NUM_CAPS]: 0,
+			[rhit.FB_KEY_USERNAME]: email.value,
+		})
+		.then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.log("Error adding document: ", error);
 		});
 	}
 	signOut() {
@@ -424,6 +435,16 @@ rhit.SignInUpManager = class {
 	}
 	get uid() {
 		return this._user.uid;
+	}
+}
+
+rhit.Users = class {
+	constructor(id, dateJoined, isPublic, numCaps, username) {
+		this.id = id;
+		this.dateJoined = dateJoined;
+		this.isPublic = isPublic;
+		this.numCaps = numCaps;
+		this.username = username;
 	}
 }
 
@@ -441,6 +462,14 @@ rhit.main = function () {
 
 		// Page initialization
 		//rhit.initializePage();
+		if (document.querySelector("#signUpPage")) {
+			new rhit.SignUpPageController();
+		}
+
+		if (document.querySelector("#signInPage")) {
+			new rhit.SignInPageController();
+		}
+
 		if (document.querySelector("#myCollectionPage")) {
 			rhit.capsManager = new rhit.CapsManager();
 			new rhit.CollectionPageController();
