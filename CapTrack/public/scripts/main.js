@@ -386,6 +386,10 @@ rhit.main = function () {
 	if(document.querySelector("#myAccountPage")) {
 		
 	}
+	document.getElementById("isPublicNav").addEventListener('click', function (event) { 
+		console.log("Clicked public collection in menu");
+		event.stopPropagation(); 
+	});
 	
 };
 
