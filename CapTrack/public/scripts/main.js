@@ -204,7 +204,7 @@ rhit.CapsManager = class {
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
 			this._documentSnapshots = querySnapshot.docs;
 			console.log(this._documentSnapshots);
-			this.stopListening();
+			// this.stopListening();
 			changeListener();
 		});
 	}
@@ -324,7 +324,7 @@ rhit.SingleCapManager = class {
 		});
 	}
 	delete() {
-		this._ref.delete();
+		return this._ref.delete();
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
