@@ -492,6 +492,14 @@ rhit.main = function () {
 
 		// Page initialization
 		//rhit.initializePage();
+		if(rhit.signInUpManager.isSignedIn) {
+			
+			document.getElementById("signInNavBtn").style.display="none";
+		} else {
+			document.getElementById("isPublicNav").style.display="none";
+			document.getElementById("signOutBtn").style.display="none";
+		}
+
 		if(document.querySelector("#mainPage")){
 			let userText = document.getElementById("userText");
 			if(rhit.signInUpManager.isSignedIn) {

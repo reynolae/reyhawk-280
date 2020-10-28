@@ -24,29 +24,31 @@
         <i class="material-icons">menu</i>
       </button>
       <div class="dropdown-menu" aria-labelledby="lr1">
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
+        <button id="homeNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
+        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myCollection.html'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
           <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
+        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
           <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
-        <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
+        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-          <button class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+          <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
-          <div id="isPublicNav" class="dropdown-item">
-            <i class="material-icons"><!--supervisor_account--></i>Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span class="switch">
-              <label>
-                <input id="publicSwitch" type="checkbox" checked>
-                
-              </label>
-            </span>
-          </div>
-        <button id="signOutBtn" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <div id="isPublicNav" class="dropdown-item">
+          &nbsp;&nbsp;Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span class="switch">
+            <label>
+              <input id="publicSwitch" type="checkbox" checked>
+            </label>
+          </span>
+        </div>
+
+        <button id="signInNavBtn" class="dropdown-item" type="button" onclick="window.location.href='auth_signin.html'">
+          <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign In</button>
+        <button id="signOutBtn" class="dropdown-item" type="button">
           <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign Out</button>
       </div>
     </div>

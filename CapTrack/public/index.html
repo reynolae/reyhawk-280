@@ -38,17 +38,18 @@
           <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
         <div id="isPublicNav" class="dropdown-item">
-          <i class="material-icons"><!--supervisor_account--></i>Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <span class="switch">
             <label>
               <input id="publicSwitch" type="checkbox" checked>
-              
             </label>
           </span>
         </div>
 
-        <button id="signInToggleNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='auth_signin.html'">
+        <button id="signInNavBtn" class="dropdown-item" type="button" onclick="window.location.href='auth_signin.html'">
           <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign In</button>
+        <button id="signOutBtn" class="dropdown-item" type="button">
+          <i class="material-icons">login</i>&nbsp;&nbsp;&nbsp;Sign Out</button>
       </div>
     </div>
 
