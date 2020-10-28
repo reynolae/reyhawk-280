@@ -47,6 +47,35 @@ function getCheckedCapsId() {
 	return ids;
 }
 
+rhit.MainPageController = class {
+	constructor() {
+		document.getElementById("userText").addEventListener("click", (event) => {
+			if(rhit.signInUpManager.isSignedIn) {
+				window.location.href = "myAccount.html"
+			} else {
+				window.location.href = "auth_signIn.html"
+			}
+		});
+		this.updatePage();
+	}
+
+	updatePage() {
+		let userText = document.getElementById("userText");
+		if (rhit.signInUpManager.isSignedIn) {
+			//console.log("now I'm super out here",rhit.signInUpManager.username);
+			let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
+			ref.onSnapshot((doc) => {
+				let username = doc.get(rhit.FB_KEY_USERNAME)
+				console.log("here",username);
+				userText.innerHTML = username;
+			});
+
+		} else {
+			userText.innerHTML = "Guest";
+		}
+	}
+}
+
 rhit.CollectionPageController = class {
 	constructor() {
 
@@ -162,7 +191,7 @@ rhit.CollectionPageController = class {
 rhit.CapsManager = class {
 	constructor() {
 		this._documentSnapshots = [];
-		this._user=rhit.signInUpManager.uid;
+		this._user = rhit.signInUpManager.uid;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
 		this._queryDate = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
@@ -314,7 +343,7 @@ rhit.SingleCapManager = class {
 	constructor(capId) {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
-		this._user=rhit.signInUpManager.uid;
+		this._user = rhit.signInUpManager.uid;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS).doc(capId);
 	}
 	edit(drinkName, quality, location, dateFound, description, pic) {
@@ -373,8 +402,11 @@ rhit.SingleCapManager = class {
 }
 
 rhit.SignInPageController = class {
-	constructor() {}
-	updatePage() {}
+	constructor() {
+		document.querySelector("#signInButton").onclick = (event) => {
+			rhit.signInUpManager.signIn(inputEmail, inputPassword);
+		};
+	}
 }
 
 rhit.SignUpPageController = class {
@@ -383,7 +415,6 @@ rhit.SignUpPageController = class {
 			rhit.signInUpManager.signUp(inputEmail, inputPassword);
 		};
 	}
-	updatePage() {}
 }
 
 rhit.SignInUpManager = class {
@@ -404,21 +435,29 @@ rhit.SignInUpManager = class {
 		});
 	}
 	signIn() {
-
+		console.log(`log in for email: ${inputEmail.value} password: ${inputPassword.value}`);
+		firebase.auth().signInWithEmailAndPassword(inputEmail.value, inputPassword.value).catch(function (error) {
+			// Handle Errors here.
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			// ...
+			console.log("exsisting account log in error", errorCode, errorMessage);
+		});
 	}
 	signUp(email, password) {
 		console.log(`create account for email: ${email.value} password: ${password.value}`);
 		firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
 			.then((userCred) => {
-				var re = /^(\w+)\@/;
-				userNameResult = re.exec(email.value)[1];
-				let ref =firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(userCred.user.uid);
+				var re = /(\w+)\@/;
+				var userNameResult = re.exec(email.value)[1];
+				console.log(userNameResult);
+				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(userCred.user.uid);
 				ref.set({
-						[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
-						[rhit.FB_KEY_IS_PUBLIC]: true,
-						[rhit.FB_KEY_NUM_CAPS]: 0,
-						[rhit.FB_KEY_USERNAME]: this._userNameResult,
-					})
+					[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
+					[rhit.FB_KEY_IS_PUBLIC]: true,
+					[rhit.FB_KEY_NUM_CAPS]: 0,
+					[rhit.FB_KEY_USERNAME]: userNameResult,
+				})
 			})
 			.catch(function (error) {
 				// Handle Errors here.
@@ -444,19 +483,19 @@ rhit.SignInUpManager = class {
 		return this._user.uid;
 	}
 
-	async getCurrentUsername() {
-		this._ref.onSnapshot((doc) => {
-			this._username = doc.get(rhit.FB_KEY_USERNAME)
-			console.log(this._username);
-			return this._username;
-		});
-		return
-	}
+	// async getCurrentUsername() {
+	// 	this._ref.onSnapshot((doc) => {
+	// 		this._username = doc.get(rhit.FB_KEY_USERNAME)
+	// 		console.log(this._username);
+	// 		return this._username;
+	// 	});
+	// 	return
+	// }
 
-	get username() {
-		console.log("get ",this._username);
-		return this._username;
-	}
+	// get username() {
+	// 	console.log("get ", this._username);
+	// 	return this._username;
+	// }
 }
 
 rhit.Users = class {
@@ -469,13 +508,13 @@ rhit.Users = class {
 	}
 }
 
-rhit.checkForRedirects = function(){
-	if((document.querySelector("#signInPage") || (document.querySelector("#signUpPage")))&& rhit.signInUpManager.isSignedIn) {
-		window.location.href="/"
-	} 
+rhit.checkForRedirects = function () {
+	if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
+		window.location.href = "/"
+	}
 
-	if((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
-		window.location.href="/auth_signup.html"
+	if ((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
+		window.location.href = "/auth_signup.html"
 	}
 }
 
@@ -491,29 +530,17 @@ rhit.main = function () {
 		rhit.checkForRedirects();
 
 		// Page initialization
-		//rhit.initializePage();
-		if(rhit.signInUpManager.isSignedIn) {
-			
-			document.getElementById("signInNavBtn").style.display="none";
+		//rhit.initializePage();a
+		if (rhit.signInUpManager.isSignedIn) {
+
+			document.getElementById("signInNavBtn").style.display = "none";
 		} else {
-			document.getElementById("isPublicNav").style.display="none";
-			document.getElementById("signOutBtn").style.display="none";
+			document.getElementById("isPublicNav").style.display = "none";
+			document.getElementById("signOutBtn").style.display = "none";
 		}
 
-		if(document.querySelector("#mainPage")){
-			let userText = document.getElementById("userText");
-			if(rhit.signInUpManager.isSignedIn) {
-				//console.log("now I'm super out here",rhit.signInUpManager.username);
-				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
-				ref.onSnapshot((doc) => {
-					let username = doc.get(rhit.FB_KEY_USERNAME)
-					console.log(username);
-					userText.innerHTML = username;
-				});
-				
-			} else {
-				userText.innerHTML = "Guest";
-			}
+		if (document.querySelector("#mainPage")) {
+			new rhit.MainPageController();
 		}
 
 		if (document.querySelector("#signUpPage")) {
