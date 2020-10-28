@@ -162,7 +162,8 @@ rhit.CollectionPageController = class {
 rhit.CapsManager = class {
 	constructor() {
 		this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS);
+		this._user=rhit.signInUpManager.uid;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
 		this._queryDate = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
 		this._queryName = this._ref.orderBy(rhit.FB_KEY_DRINK_NAME).limit(50);
@@ -272,7 +273,7 @@ rhit.DetailsPageController = class {
 			var quality = rhit.singleCapManager.quality;
 			var qualBtns = document.getElementsByName("quality");
 			for (var i = 0; i < qualBtns.length; i++) {
-				if(qualBtns[i].value == quality) {
+				if (qualBtns[i].value == quality) {
 					qualBtns[i].checked = true;
 				}
 			}
@@ -292,7 +293,7 @@ rhit.DetailsPageController = class {
 			rhit.singleCapManager.delete().then(function () {
 				console.log("Document successfully deleted!");
 				window.location.href = "mycollection.html";
-			}).catch(function(error) {
+			}).catch(function (error) {
 				console.error("Error removing document:", error);
 			});;
 		});
@@ -302,7 +303,7 @@ rhit.DetailsPageController = class {
 	updateView() {
 		document.querySelector("#detailDrinkName").innerHTML = rhit.singleCapManager.drinkName;
 		var quality = rhit.singleCapManager.quality
-		document.querySelector("#detailQuality").innerHTML = "<strong>"+quality.slice(2, quality.length)+"<strong>";
+		document.querySelector("#detailQuality").innerHTML = "<strong>" + quality.slice(2, quality.length) + "<strong>";
 		document.querySelector("#detailLocation").innerHTML = rhit.singleCapManager.location;
 		document.querySelector("#detailDate").innerHTML = rhit.singleCapManager.dateFound;
 		document.querySelector("#detailDescription").innerHTML = rhit.singleCapManager.description;
@@ -313,23 +314,24 @@ rhit.SingleCapManager = class {
 	constructor(capId) {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(capId);
+		this._user=rhit.signInUpManager.uid;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS).doc(capId);
 	}
 	edit(drinkName, quality, location, dateFound, description, pic) {
 		this._ref.update({
-			[rhit.FB_KEY_DRINK_NAME]: drinkName,
-			[rhit.FB_KEY_QUALITY]: quality,
-			[rhit.FB_KEY_LOCATION]: location,
-			[rhit.FB_KEY_DATE_FOUND]: dateFound,
-			[rhit.FB_KEY_DESCRIPTION]: description,
-			[rhit.FB_KEY_PIC]: pic,
-		})
-		.then(function () {
-			console.log("Document successfully updated!");
-		})
-		.catch(function (error) {
-			console.log("Error updating document: ", error);
-		});
+				[rhit.FB_KEY_DRINK_NAME]: drinkName,
+				[rhit.FB_KEY_QUALITY]: quality,
+				[rhit.FB_KEY_LOCATION]: location,
+				[rhit.FB_KEY_DATE_FOUND]: dateFound,
+				[rhit.FB_KEY_DESCRIPTION]: description,
+				[rhit.FB_KEY_PIC]: pic,
+			})
+			.then(function () {
+				console.log("Document successfully updated!");
+			})
+			.catch(function (error) {
+				console.log("Error updating document: ", error);
+			});
 	}
 	delete() {
 		return this._ref.delete();
@@ -337,7 +339,7 @@ rhit.SingleCapManager = class {
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
-				console.log("Document data:", doc.data());
+				//console.log("Document data:", doc.data());
 				this._documentSnapshot = doc;
 				changeListener();
 			} else {
@@ -378,7 +380,7 @@ rhit.SignInPageController = class {
 rhit.SignUpPageController = class {
 	constructor() {
 		document.querySelector("#createAccountButton").onclick = (event) => {
-			rhit.signInUpManager.signUp(inputEmail,inputPassword);
+			rhit.signInUpManager.signUp(inputEmail, inputPassword);
 		};
 	}
 	updatePage() {}
@@ -386,45 +388,50 @@ rhit.SignUpPageController = class {
 
 rhit.SignInUpManager = class {
 	constructor() {
-		this._documentSnapshot = {};
 		this._unsubscribe = null;
 		this._user = null;
 		this._ref = null;
+		this._username = null;
 	}
 	beginListening(changeListener) {
 		firebase.auth().onAuthStateChanged((user) => {
-			this._user = user;
-			this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user.uid);
-			changeListener();
 			console.log("auth on");
+			this._user = user;
+			if (this._user != null) {
+				this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user.uid);
+			}
+			changeListener();
 		});
 	}
 	signIn() {
-		
-	}
-	signUp(email,password) {
-		console.log(`create account for email: ${email.value} password: ${password.value}`);
-		firebase.auth().createUserWithEmailAndPassword(email.value, password.value).catch(function (error) {
-			// Handle Errors here.
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			// ...
-			console.log("Create Account error", errorCode, errorMessage);
-		});
 
-		this._ref.add({
-			[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
-			[rhit.FB_KEY_IS_PUBLIC]: true,
-			[rhit.FB_KEY_NUM_CAPS]: 0,
-			[rhit.FB_KEY_USERNAME]: email.value,
-		})
-		.then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch(function (error) {
-			console.log("Error adding document: ", error);
-		});
 	}
+	signUp(email, password) {
+		console.log(`create account for email: ${email.value} password: ${password.value}`);
+		firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
+			.then((userCred) => {
+				var re = /^(\w+)\@/;
+				userNameResult = re.exec(email.value)[1];
+				let ref =firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(userCred.user.uid);
+				ref.set({
+						[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
+						[rhit.FB_KEY_IS_PUBLIC]: true,
+						[rhit.FB_KEY_NUM_CAPS]: 0,
+						[rhit.FB_KEY_USERNAME]: this._userNameResult,
+					})
+			})
+			.catch(function (error) {
+				// Handle Errors here.
+				var errorCode = error.code;
+				var errorMessage = error.message;
+				// ...
+				console.log("Create Account error", errorCode, errorMessage);
+			});
+
+	}
+	// async _waitForCurrentUser() {
+	// 	return await firebase.auth().currentUser;
+	// }
 	signOut() {
 		firebase.auth().signOut().catch((error) => {
 			console.log("Sign out error");
@@ -435,6 +442,20 @@ rhit.SignInUpManager = class {
 	}
 	get uid() {
 		return this._user.uid;
+	}
+
+	async getCurrentUsername() {
+		this._ref.onSnapshot((doc) => {
+			this._username = doc.get(rhit.FB_KEY_USERNAME)
+			console.log(this._username);
+			return this._username;
+		});
+		return
+	}
+
+	get username() {
+		console.log("get ",this._username);
+		return this._username;
 	}
 }
 
@@ -448,6 +469,16 @@ rhit.Users = class {
 	}
 }
 
+rhit.checkForRedirects = function(){
+	if((document.querySelector("#signInPage") || (document.querySelector("#signUpPage")))&& rhit.signInUpManager.isSignedIn) {
+		window.location.href="/"
+	} 
+
+	if((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
+		window.location.href="/auth_signup.html"
+	}
+}
+
 /* Main */
 /** function and class syntax examples */
 rhit.main = function () {
@@ -455,13 +486,28 @@ rhit.main = function () {
 
 	rhit.signInUpManager = new rhit.SignInUpManager();
 	rhit.signInUpManager.beginListening(() => {
-		console.log("isSignedIn =", rhit.SignInUpManager.isSignedIn);
-
+		console.log("isSignedIn =", rhit.signInUpManager.isSignedIn);
 		//Check for redirects
-		//rhit.checkForRedirects();
+		rhit.checkForRedirects();
 
 		// Page initialization
 		//rhit.initializePage();
+		if(document.querySelector("#mainPage")){
+			let userText = document.getElementById("userText");
+			if(rhit.signInUpManager.isSignedIn) {
+				//console.log("now I'm super out here",rhit.signInUpManager.username);
+				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
+				ref.onSnapshot((doc) => {
+					let username = doc.get(rhit.FB_KEY_USERNAME)
+					console.log(username);
+					userText.innerHTML = username;
+				});
+				
+			} else {
+				userText.innerHTML = "Guest";
+			}
+		}
+
 		if (document.querySelector("#signUpPage")) {
 			new rhit.SignUpPageController();
 		}
@@ -478,7 +524,7 @@ rhit.main = function () {
 			const queryString = window.location.search;
 			const urlParams = new URLSearchParams(queryString);
 			const capId = urlParams.get("id");
-	
+
 			if (!capId) {
 				window.location.href = "/"
 			}
@@ -487,15 +533,19 @@ rhit.main = function () {
 			new rhit.DetailsPageController();
 		}
 	});
-	
-	if(document.querySelector("#myAccountPage")) {
-		
+
+	if (document.querySelector("#myAccountPage")) {
+
 	}
-	document.getElementById("isPublicNav").addEventListener('click', function (event) { 
+	document.getElementById("isPublicNav").addEventListener('click', function (event) {
 		console.log("Clicked public collection in menu");
-		event.stopPropagation(); 
+		event.stopPropagation();
 	});
-	
+	document.getElementById("signOutBtn").addEventListener('click', function (event) {
+		console.log("Clicked sign out in menu");
+		rhit.signInUpManager.signOut();
+	});
+
 };
 
 rhit.main();
