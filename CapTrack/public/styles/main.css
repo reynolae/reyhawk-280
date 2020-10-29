@@ -314,3 +314,9 @@ nav .dropdown-item {
     color: rgb(110, 110, 110);
 }
 
+#editImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
