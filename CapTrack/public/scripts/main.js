@@ -65,7 +65,7 @@ rhit.MainPageController = class {
 			//console.log("now I'm super out here",rhit.signInUpManager.username);
 			let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
 			ref.onSnapshot((doc) => {
-				let username = doc.get(rhit.FB_KEY_USERNAME)
+				let username = doc.get(rhit.FB_KEY_USERNAME);
 				console.log("here",username);
 				userText.innerHTML = username;
 			});
@@ -457,6 +457,8 @@ rhit.SignInUpManager = class {
 					[rhit.FB_KEY_IS_PUBLIC]: true,
 					[rhit.FB_KEY_NUM_CAPS]: 0,
 					[rhit.FB_KEY_USERNAME]: userNameResult,
+				}).then(() => {
+					window.location.href="/";
 				})
 			})
 			.catch(function (error) {
@@ -468,9 +470,6 @@ rhit.SignInUpManager = class {
 			});
 
 	}
-	// async _waitForCurrentUser() {
-	// 	return await firebase.auth().currentUser;
-	// }
 	signOut() {
 		firebase.auth().signOut().catch((error) => {
 			console.log("Sign out error");
@@ -480,22 +479,9 @@ rhit.SignInUpManager = class {
 		return !!this._user;
 	}
 	get uid() {
+		console.log("get uid",this._user.uid);
 		return this._user.uid;
 	}
-
-	// async getCurrentUsername() {
-	// 	this._ref.onSnapshot((doc) => {
-	// 		this._username = doc.get(rhit.FB_KEY_USERNAME)
-	// 		console.log(this._username);
-	// 		return this._username;
-	// 	});
-	// 	return
-	// }
-
-	// get username() {
-	// 	console.log("get ", this._username);
-	// 	return this._username;
-	// }
 }
 
 rhit.Users = class {
@@ -509,9 +495,9 @@ rhit.Users = class {
 }
 
 rhit.checkForRedirects = function () {
-	if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
-		window.location.href = "/"
-	}
+	// if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
+	// 	window.location.href = "/"
+	// }
 
 	if ((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
 		window.location.href = "/auth_signup.html"
@@ -532,11 +518,15 @@ rhit.main = function () {
 		// Page initialization
 		//rhit.initializePage();a
 		if (rhit.signInUpManager.isSignedIn) {
-
+			document.getElementById("myAccountNav").style.display = "flex";
+			document.getElementById("isPublicNav").style.display = "flex";
+			document.getElementById("signOutBtn").style.display = "flex";
 			document.getElementById("signInNavBtn").style.display = "none";
 		} else {
+			document.getElementById("myAccountNav").style.display = "none";
 			document.getElementById("isPublicNav").style.display = "none";
 			document.getElementById("signOutBtn").style.display = "none";
+			document.getElementById("signInNavBtn").style.display = "flex";
 		}
 
 		if (document.querySelector("#mainPage")) {
