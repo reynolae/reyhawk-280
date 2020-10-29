@@ -210,6 +210,7 @@ rhit.CapsManager = class {
 				[rhit.FB_KEY_PIC]: pic,
 			})
 			.then(function (docRef) {
+				rhit.signInUpManager.incNumCaps();
 				console.log("Document written with ID: ", docRef.id);
 			})
 			.catch(function (error) {
@@ -221,6 +222,7 @@ rhit.CapsManager = class {
 		if (!!ids.length) {
 			for (let i = 0; i < ids.length; i++) {
 				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
+				rhit.signInUpManager.decNumCaps();
 				ref.delete();
 			}
 		} else {
@@ -363,6 +365,7 @@ rhit.SingleCapManager = class {
 			});
 	}
 	delete() {
+		rhit.signInUpManager.decNumCaps();
 		return this._ref.delete();
 	}
 	beginListening(changeListener) {
@@ -412,7 +415,7 @@ rhit.SignInPageController = class {
 rhit.SignUpPageController = class {
 	constructor() {
 		document.querySelector("#createAccountButton").onclick = (event) => {
-			rhit.signInUpManager.signUp(inputEmail, inputPassword);
+			rhit.signInUpManager.signUp(inputEmail, inputPassword, signUpIsPublic);
 		};
 	}
 }
@@ -423,6 +426,8 @@ rhit.SignInUpManager = class {
 		this._user = null;
 		this._ref = null;
 		this._username = null;
+		this._documentSnapshot=null;
+		this._numCaps = 0;
 	}
 	beginListening(changeListener) {
 		firebase.auth().onAuthStateChanged((user) => {
@@ -444,17 +449,18 @@ rhit.SignInUpManager = class {
 			console.log("exsisting account log in error", errorCode, errorMessage);
 		});
 	}
-	signUp(email, password) {
-		console.log(`create account for email: ${email.value} password: ${password.value}`);
+	signUp(email, password, isPublic) {
+		console.log(`create account for email: ${email.value} password: ${password.value} isPublic: ${isPublic.checked}`);
 		firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
 			.then((userCred) => {
+				console.log("adding public:", isPublic.checked);
 				var re = /(\w+)\@/;
 				var userNameResult = re.exec(email.value)[1];
 				console.log(userNameResult);
 				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(userCred.user.uid);
 				ref.set({
 					[rhit.FB_KEY_DATE_JOINED]: firebase.firestore.Timestamp.now(),
-					[rhit.FB_KEY_IS_PUBLIC]: true,
+					[rhit.FB_KEY_IS_PUBLIC]: isPublic.checked,
 					[rhit.FB_KEY_NUM_CAPS]: 0,
 					[rhit.FB_KEY_USERNAME]: userNameResult,
 				}).then(() => {
@@ -482,6 +488,34 @@ rhit.SignInUpManager = class {
 		console.log("get uid",this._user.uid);
 		return this._user.uid;
 	}
+
+
+	toggleIsPublic() {
+		if(this._isPublic){
+			this._isPublic=false;
+		} else {
+			this._isPublic=true;
+		}
+		this._ref.update({[rhit.FB_KEY_IS_PUBLIC]: this._isPublic}).then(() => {
+			//console.log("Changed isPublic in firestore");
+		});
+	}
+
+	incNumCaps() {
+		console.log("TODO: increase numCaps by 1");
+		this.numCaps++;
+		this._ref.update({[rhit.FB_KEY_NUM_CAPS]: this._numCaps}).then(() => {
+			console.log("Increased numCaps in firestore");
+		});
+	}
+
+	decNumCaps() {
+		console.log("TODO: descrease numCaps by 1");
+		this.numCaps--;
+		this._ref.update({[rhit.FB_KEY_NUM_CAPS]: this._numCaps}).then(() => {
+			console.log("Descreased numCaps in firestore");
+		});
+	}
 }
 
 rhit.Users = class {
@@ -498,9 +532,51 @@ rhit.checkForRedirects = function () {
 	// if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
 	// 	window.location.href = "/"
 	// }
-
 	if ((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
 		window.location.href = "/auth_signup.html"
+	}
+}
+
+rhit.initializePage = function () {
+	if (rhit.signInUpManager.isSignedIn) {
+		document.getElementById("myAccountNav").style.display = "flex";
+		document.getElementById("isPublicNav").style.display = "flex";
+		document.getElementById("signOutBtn").style.display = "flex";
+		document.getElementById("signInNavBtn").style.display = "none";
+	} else {
+		document.getElementById("myAccountNav").style.display = "none";
+		document.getElementById("isPublicNav").style.display = "none";
+		document.getElementById("signOutBtn").style.display = "none";
+		document.getElementById("signInNavBtn").style.display = "flex";
+	}
+
+	if (document.querySelector("#mainPage")) {
+		new rhit.MainPageController();
+	}
+
+	if (document.querySelector("#signUpPage")) {
+		new rhit.SignUpPageController();
+	}
+
+	if (document.querySelector("#signInPage")) {
+		new rhit.SignInPageController();
+	}
+
+	if (document.querySelector("#myCollectionPage")) {
+		rhit.capsManager = new rhit.CapsManager();
+		new rhit.CollectionPageController();
+	}
+	if (document.querySelector("#detailsPage")) {
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const capId = urlParams.get("id");
+
+		if (!capId) {
+			window.location.href = "mycollection.html"
+		}
+		console.log();
+		rhit.singleCapManager = new rhit.SingleCapManager(capId);
+		new rhit.DetailsPageController();
 	}
 }
 
@@ -516,56 +592,20 @@ rhit.main = function () {
 		rhit.checkForRedirects();
 
 		// Page initialization
-		//rhit.initializePage();a
-		if (rhit.signInUpManager.isSignedIn) {
-			document.getElementById("myAccountNav").style.display = "flex";
-			document.getElementById("isPublicNav").style.display = "flex";
-			document.getElementById("signOutBtn").style.display = "flex";
-			document.getElementById("signInNavBtn").style.display = "none";
-		} else {
-			document.getElementById("myAccountNav").style.display = "none";
-			document.getElementById("isPublicNav").style.display = "none";
-			document.getElementById("signOutBtn").style.display = "none";
-			document.getElementById("signInNavBtn").style.display = "flex";
-		}
-
-		if (document.querySelector("#mainPage")) {
-			new rhit.MainPageController();
-		}
-
-		if (document.querySelector("#signUpPage")) {
-			new rhit.SignUpPageController();
-		}
-
-		if (document.querySelector("#signInPage")) {
-			new rhit.SignInPageController();
-		}
-
-		if (document.querySelector("#myCollectionPage")) {
-			rhit.capsManager = new rhit.CapsManager();
-			new rhit.CollectionPageController();
-		}
-		if (document.querySelector("#detailsPage")) {
-			const queryString = window.location.search;
-			const urlParams = new URLSearchParams(queryString);
-			const capId = urlParams.get("id");
-
-			if (!capId) {
-				window.location.href = "/"
-			}
-			console.log();
-			rhit.singleCapManager = new rhit.SingleCapManager(capId);
-			new rhit.DetailsPageController();
-		}
+		rhit.initializePage();
 	});
 
 	if (document.querySelector("#myAccountPage")) {
 
 	}
-	document.getElementById("isPublicNav").addEventListener('click', function (event) {
+	document.getElementById("publicSwitch").addEventListener('click', function (event) {
 		console.log("Clicked public collection in menu");
-		event.stopPropagation();
+		rhit.signInUpManager.toggleIsPublic();
+		//console.log("Collection is now pblic:", rhit.signInUpManager.isPublicCurrent);
 	});
+	document.getElementById("isPublicNav").addEventListener('click', function (event) {
+		event.stopPropagation();
+	})
 	document.getElementById("signOutBtn").addEventListener('click', function (event) {
 		console.log("Clicked sign out in menu");
 		rhit.signInUpManager.signOut();
