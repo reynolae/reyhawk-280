@@ -27,6 +27,7 @@ rhit.FB_KEY_PIC = "pic";
 rhit.capsManager = null;
 rhit.singleCapManager = null;
 rhit.signInUpManager = null;
+rhit.usersManager = null;
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -50,7 +51,7 @@ function getCheckedCapsId() {
 rhit.MainPageController = class {
 	constructor() {
 		document.getElementById("userText").addEventListener("click", (event) => {
-			if(rhit.signInUpManager.isSignedIn) {
+			if (rhit.signInUpManager.isSignedIn) {
 				window.location.href = "myAccount.html"
 			} else {
 				window.location.href = "auth_signIn.html"
@@ -66,7 +67,7 @@ rhit.MainPageController = class {
 			let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
 			ref.onSnapshot((doc) => {
 				let username = doc.get(rhit.FB_KEY_USERNAME);
-				console.log("here",username);
+				console.log("here", username);
 				userText.innerHTML = username;
 			});
 
@@ -404,6 +405,72 @@ rhit.SingleCapManager = class {
 	}
 }
 
+rhit.ExplorePageController = class {
+	constructor() {
+		// start listening
+		rhit.usersManager.beginListening(this.updateView.bind(this))
+	}
+	updateView() {
+		const newList = htmlToElement('<div id="capsListContainer"></div>')
+		for (let i = 0; i < rhit.usersManager.length; i++) {
+			const user = rhit.usersManager.getUserAtIndex(i);
+			const newCard = this._createCard(user);
+
+			newCard.querySelector("#userPic").onclick = (event) => {
+				window.location.href = `/mycollection.html?id=${user.id}`
+			};
+			newList.appendChild(newCard);
+		}
+		const oldList = document.querySelector("#capsListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+	_createCard(user) {
+		return htmlToElement(`<div id="${user.id}" class="capCard row">
+        <div class="col-3">
+          <img id="userPic" src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
+        </div>
+        <div class="col-9">
+          <h5>${user.username}</h5>
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${user.numCaps} Bottle Caps</span>
+        </div>
+      </div>`);
+	}
+}
+
+rhit.UsersManager = class {
+	constructor() {
+		this._documentSnapshots = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS);
+	}
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+			console.log(this._documentSnapshots);
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+	get length() {
+		return this._documentSnapshots.length
+	}
+	getUserAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		const user = new rhit.Users(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_DATE_JOINED),
+			docSnapshot.get(rhit.FB_KEY_IS_PUBLIC),
+			docSnapshot.get(rhit.FB_KEY_NUM_CAPS),
+			docSnapshot.get(rhit.FB_KEY_USERNAME),
+		);
+		return user;
+	}
+}
+
 rhit.SignInPageController = class {
 	constructor() {
 		document.querySelector("#signInButton").onclick = (event) => {
@@ -426,7 +493,7 @@ rhit.SignInUpManager = class {
 		this._user = null;
 		this._ref = null;
 		this._username = null;
-		this._documentSnapshot=null;
+		this._documentSnapshot = null;
 		this._numCaps = 0;
 	}
 	beginListening(changeListener) {
@@ -464,7 +531,7 @@ rhit.SignInUpManager = class {
 					[rhit.FB_KEY_NUM_CAPS]: 0,
 					[rhit.FB_KEY_USERNAME]: userNameResult,
 				}).then(() => {
-					window.location.href="/";
+					window.location.href = "/";
 				})
 			})
 			.catch(function (error) {
@@ -485,18 +552,20 @@ rhit.SignInUpManager = class {
 		return !!this._user;
 	}
 	get uid() {
-		console.log("get uid",this._user.uid);
+		console.log("get uid", this._user.uid);
 		return this._user.uid;
 	}
 
 
 	toggleIsPublic() {
-		if(this._isPublic){
-			this._isPublic=false;
+		if (this._isPublic) {
+			this._isPublic = false;
 		} else {
-			this._isPublic=true;
+			this._isPublic = true;
 		}
-		this._ref.update({[rhit.FB_KEY_IS_PUBLIC]: this._isPublic}).then(() => {
+		this._ref.update({
+			[rhit.FB_KEY_IS_PUBLIC]: this._isPublic
+		}).then(() => {
 			//console.log("Changed isPublic in firestore");
 		});
 	}
@@ -504,7 +573,9 @@ rhit.SignInUpManager = class {
 	incNumCaps() {
 		console.log("TODO: increase numCaps by 1");
 		this.numCaps++;
-		this._ref.update({[rhit.FB_KEY_NUM_CAPS]: this._numCaps}).then(() => {
+		this._ref.update({
+			[rhit.FB_KEY_NUM_CAPS]: this._numCaps
+		}).then(() => {
 			console.log("Increased numCaps in firestore");
 		});
 	}
@@ -512,7 +583,9 @@ rhit.SignInUpManager = class {
 	decNumCaps() {
 		console.log("TODO: descrease numCaps by 1");
 		this.numCaps--;
-		this._ref.update({[rhit.FB_KEY_NUM_CAPS]: this._numCaps}).then(() => {
+		this._ref.update({
+			[rhit.FB_KEY_NUM_CAPS]: this._numCaps
+		}).then(() => {
 			console.log("Descreased numCaps in firestore");
 		});
 	}
@@ -577,6 +650,10 @@ rhit.initializePage = function () {
 		console.log();
 		rhit.singleCapManager = new rhit.SingleCapManager(capId);
 		new rhit.DetailsPageController();
+	}
+	if (document.querySelector("#explorePage")) {
+		rhit.usersManager = new rhit.UsersManager();
+		new rhit.ExplorePageController();
 	}
 }
 
