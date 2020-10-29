@@ -28,6 +28,7 @@ rhit.capsManager = null;
 rhit.singleCapManager = null;
 rhit.signInUpManager = null;
 rhit.usersManager = null;
+rhit.myAccountManager = null;
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -37,16 +38,9 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
-function getCheckedCapsId() {
-	let ids = []
-	var checkboxes = document.querySelectorAll("input[type='checkbox']");
-	for (let i = 0; i < checkboxes.length; i++) {
-		if (checkboxes[i].checked == true) {
-			ids.push(checkboxes[i].value)
-		}
-	}
-	return ids;
-}
+// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Main Page            /////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rhit.MainPageController = class {
 	constructor() {
@@ -77,6 +71,9 @@ rhit.MainPageController = class {
 	}
 }
 
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Collection Page            /////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.CollectionPageController = class {
 	constructor() {
 
@@ -189,6 +186,17 @@ rhit.CollectionPageController = class {
 	}
 }
 
+function getCheckedCapsId() {
+	let ids = []
+	var checkboxes = document.querySelectorAll("input[type='checkbox']");
+	for (let i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked == true) {
+			ids.push(checkboxes[i].value)
+		}
+	}
+	return ids;
+}
+
 rhit.CapsManager = class {
 	constructor() {
 		this._documentSnapshots = [];
@@ -211,7 +219,7 @@ rhit.CapsManager = class {
 				[rhit.FB_KEY_PIC]: pic,
 			})
 			.then(function (docRef) {
-				rhit.signInUpManager.incNumCaps();
+				rhit.myAccountManager.incNumCaps();
 				console.log("Document written with ID: ", docRef.id);
 			})
 			.catch(function (error) {
@@ -223,7 +231,7 @@ rhit.CapsManager = class {
 		if (!!ids.length) {
 			for (let i = 0; i < ids.length; i++) {
 				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
-				rhit.signInUpManager.decNumCaps();
+				rhit.myAccountManager.decNumCaps();
 				ref.delete();
 			}
 		} else {
@@ -286,6 +294,10 @@ rhit.Caps = class {
 	}
 }
 
+
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Detail Page            /////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.DetailsPageController = class {
 	constructor() {
 		// Add cap listeners
@@ -366,7 +378,7 @@ rhit.SingleCapManager = class {
 			});
 	}
 	delete() {
-		rhit.signInUpManager.decNumCaps();
+		rhit.myAccountManager.decNumCaps();
 		return this._ref.delete();
 	}
 	beginListening(changeListener) {
@@ -405,6 +417,10 @@ rhit.SingleCapManager = class {
 	}
 }
 
+
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Explore Page            ////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.ExplorePageController = class {
 	constructor() {
 		// start listening
@@ -471,6 +487,153 @@ rhit.UsersManager = class {
 	}
 }
 
+
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           My Account Page            //////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+rhit.MyAccountPageController = class {
+	constructor() {
+		document.querySelector("#submitEditAccount").addEventListener("click", (event) => {
+			const isPublic = document.querySelector("#editPublicSwitch").checked;
+			// const pic = document.querySelector("#inputFile").value;
+			const pic = "https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png"
+			const username = document.querySelector("#editUsername").value;
+			rhit.myAccountManager.edit(isPublic,username,pic);
+		});
+		$("#editAccountDialog").on("show.bs.modal", (event) => {
+			// pre animation
+			document.querySelector("#editPublicSwitch").checked = rhit.myAccountManager.isPublic;
+			//document.querySelector("#inputImage").value = rhit.myAccountManager.pic;
+			document.querySelector("#editUsername").value = rhit.myAccountManager.username;
+		});
+		$("#addCapDialog").on("shown.bs.modal", (event) => {
+			// post animation
+			document.querySelector("#editUsername").focus();
+		});
+
+
+		// Delete user listener
+		document.querySelector("#submitDeleteAccount").addEventListener("click", (event) => {
+			rhit.myAccountManager.delete().then(function () {
+				window.location.href = "/";
+			}).catch(function (error) {
+				console.error("Error removing account:", error);
+			});
+		});
+
+		rhit.myAccountManager.beginListening(this.updateView.bind(this));
+	}
+	updateView() {
+		document.querySelector("#usernameText").innerHTML = rhit.myAccountManager.username;
+		let valueIsPublic;
+		if(rhit.myAccountManager.isPublic){
+			valueIsPublic = "Public";
+		} else {
+			valueIsPublic= "Private";
+		}
+		document.querySelector("#numCapsText").innerHTML = rhit.myAccountManager.numCaps;
+		document.querySelector("#isPublicText").innerHTML = "<strong>" +valueIsPublic + "<strong>";
+		document.querySelector("#detailDate").innerHTML = rhit.myAccountManager.dateJoined.toDate();
+	}
+}
+rhit.MyAccountManager = class {
+	constructor(uid) {
+		this._documentSnapshot = null;
+		this._unsubscribe = null;
+		this._uid = uid;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(uid);
+
+	}
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+				console.log("No such document!");
+			}
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+	edit(isPublic,username,pic) {
+		this._ref.update({
+			[rhit.FB_KEY_IS_PUBLIC]: isPublic,
+			[rhit.FB_KEY_USERNAME]: username,
+			[rhit.FB_KEY_PIC]: pic,
+		})
+		.then(function () {
+			console.log("Document successfully updated!");
+		})
+		.catch(function (error) {
+			console.log("Error updating document: ", error);
+		});
+	}
+	delete() {
+		this._ref.delete().then(function () {
+			console.log('Successfully deleted ref');
+		})
+		.catch(function (error) {
+			console.log('Error deleting ref:', error);
+		});;
+		admin.auth().deleteUser(this._uid)
+			.then(function () {
+				console.log('Successfully deleted user');
+			})
+			.catch(function (error) {
+				console.log('Error deleting user:', error);
+			});
+	}
+	toggleIsPublic() {
+		if (this._isPublic) {
+			this._isPublic = false;
+		} else {
+			this._isPublic = true;
+		}
+		this._ref.update({
+			[rhit.FB_KEY_IS_PUBLIC]: this._isPublic
+		}).then(() => {
+			//console.log("Changed isPublic in firestore");
+		});
+	}
+	incNumCaps() {
+		console.log("TODO: increase numCaps by 1");
+		let numCaps = this.numCaps;
+		this._ref.update({
+			[rhit.FB_KEY_NUM_CAPS]: numCaps+1
+		}).then(() => {
+			console.log("Increased numCaps in firestore");
+		});
+	}
+	decNumCaps() {
+		console.log("TODO: descrease numCaps by 1");
+		let numCaps = this.numCaps;
+		this._ref.update({
+			[rhit.FB_KEY_NUM_CAPS]: numCaps-1
+		}).then(() => {
+			console.log("Increased numCaps in firestore");
+		});
+	}
+	get isPublic() {
+		return this._documentSnapshot.get(rhit.FB_KEY_IS_PUBLIC);
+	}
+	get dateJoined() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DATE_JOINED);
+	}
+	get numCaps() {
+		return this._documentSnapshot.get(rhit.FB_KEY_NUM_CAPS);
+	}
+	get username() {
+		return this._documentSnapshot.get(rhit.FB_KEY_USERNAME);
+	}
+}
+
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Sign in Page            /////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.SignInPageController = class {
 	constructor() {
 		document.querySelector("#signInButton").onclick = (event) => {
@@ -555,40 +718,6 @@ rhit.SignInUpManager = class {
 		console.log("get uid", this._user.uid);
 		return this._user.uid;
 	}
-
-
-	toggleIsPublic() {
-		if (this._isPublic) {
-			this._isPublic = false;
-		} else {
-			this._isPublic = true;
-		}
-		this._ref.update({
-			[rhit.FB_KEY_IS_PUBLIC]: this._isPublic
-		}).then(() => {
-			//console.log("Changed isPublic in firestore");
-		});
-	}
-
-	incNumCaps() {
-		console.log("TODO: increase numCaps by 1");
-		this.numCaps++;
-		this._ref.update({
-			[rhit.FB_KEY_NUM_CAPS]: this._numCaps
-		}).then(() => {
-			console.log("Increased numCaps in firestore");
-		});
-	}
-
-	decNumCaps() {
-		console.log("TODO: descrease numCaps by 1");
-		this.numCaps--;
-		this._ref.update({
-			[rhit.FB_KEY_NUM_CAPS]: this._numCaps
-		}).then(() => {
-			console.log("Descreased numCaps in firestore");
-		});
-	}
 }
 
 rhit.Users = class {
@@ -601,6 +730,11 @@ rhit.Users = class {
 	}
 }
 
+
+
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////              Main                /////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.checkForRedirects = function () {
 	// if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
 	// 	window.location.href = "/"
@@ -612,6 +746,16 @@ rhit.checkForRedirects = function () {
 
 rhit.initializePage = function () {
 	if (rhit.signInUpManager.isSignedIn) {
+
+		rhit.myAccountManager=new this.MyAccountManager(rhit.signInUpManager.uid);
+		rhit.myAccountManager.beginListening(() => {
+			if(rhit.myAccountManager.isPublic) {
+				document.getElementById("publicSwitch").checked = true;
+			} else {
+				document.getElementById("publicSwitch").checked = false;
+			}
+		})
+
 		document.getElementById("myAccountNav").style.display = "flex";
 		document.getElementById("isPublicNav").style.display = "flex";
 		document.getElementById("signOutBtn").style.display = "flex";
@@ -625,14 +769,6 @@ rhit.initializePage = function () {
 
 	if (document.querySelector("#mainPage")) {
 		new rhit.MainPageController();
-	}
-
-	if (document.querySelector("#signUpPage")) {
-		new rhit.SignUpPageController();
-	}
-
-	if (document.querySelector("#signInPage")) {
-		new rhit.SignInPageController();
 	}
 
 	if (document.querySelector("#myCollectionPage")) {
@@ -655,6 +791,18 @@ rhit.initializePage = function () {
 		rhit.usersManager = new rhit.UsersManager();
 		new rhit.ExplorePageController();
 	}
+
+	if (document.querySelector("#myAccountPage")) {
+		new rhit.MyAccountPageController();
+	}
+
+	if (document.querySelector("#signUpPage")) {
+		new rhit.SignUpPageController();
+	}
+
+	if (document.querySelector("#signInPage")) {
+		new rhit.SignInPageController();
+	}
 }
 
 /* Main */
@@ -672,12 +820,9 @@ rhit.main = function () {
 		rhit.initializePage();
 	});
 
-	if (document.querySelector("#myAccountPage")) {
-
-	}
 	document.getElementById("publicSwitch").addEventListener('click', function (event) {
 		console.log("Clicked public collection in menu");
-		rhit.signInUpManager.toggleIsPublic();
+		rhit.myAccountManager.toggleIsPublic();
 		//console.log("Collection is now pblic:", rhit.signInUpManager.isPublicCurrent);
 	});
 	document.getElementById("isPublicNav").addEventListener('click', function (event) {
