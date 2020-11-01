@@ -61,7 +61,6 @@ rhit.MainPageController = class {
 			let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
 			ref.onSnapshot((doc) => {
 				let username = doc.get(rhit.FB_KEY_USERNAME);
-				console.log("here", username);
 				userText.innerHTML = username;
 			});
 
@@ -671,11 +670,15 @@ rhit.SignInUpManager = class {
 	}
 	signIn() {
 		console.log(`log in for email: ${inputEmail.value} password: ${inputPassword.value}`);
-		firebase.auth().signInWithEmailAndPassword(inputEmail.value, inputPassword.value).catch(function (error) {
+		firebase.auth().signInWithEmailAndPassword(inputEmail.value, inputPassword.value)
+		.then(function(){
+			window.location.href='/';
+		}).catch(function (error) {
 			// Handle Errors here.
 			var errorCode = error.code;
 			var errorMessage = error.message;
-			// ...
+			
+			document.getElementById("loginFailText").innerHTML="&#9888; "+errorMessage;
 			console.log("exsisting account log in error", errorCode, errorMessage);
 		});
 	}
@@ -702,6 +705,7 @@ rhit.SignInUpManager = class {
 				var errorCode = error.code;
 				var errorMessage = error.message;
 				// ...
+				document.getElementById("loginFailText").innerHTML="&#9888; "+errorMessage;
 				console.log("Create Account error", errorCode, errorMessage);
 			});
 
