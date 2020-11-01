@@ -39,7 +39,7 @@ function htmlToElement(html) {
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////           Main Page            /////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Index Page            /////////////////////////////////////////////////////////////////////////////
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rhit.MainPageController = class {
@@ -144,6 +144,11 @@ rhit.CollectionPageController = class {
 		rhit.capsManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
+		if(rhit.capsManager.user != rhit.signInUpManager.uid){
+			document.getElementById("collectionTitleText").innerHTML="Explore - Collection"
+			document.getElementById("addButton").style.display="none";
+			document.getElementById("deleteButton").style.display="none";
+		}
 		const newList = htmlToElement('<div id="capsListContainer"></div>')
 		// console.log(rhit.capsManager.length, "length?");
 		for (let i = 0; i < rhit.capsManager.length; i++) {
@@ -197,9 +202,9 @@ function getCheckedCapsId() {
 }
 
 rhit.CapsManager = class {
-	constructor() {
+	constructor(userId) {
 		this._documentSnapshots = [];
-		this._user = rhit.signInUpManager.uid;
+		this._user = userId;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
 		this._queryDate = this._ref.orderBy(rhit.FB_KEY_DATE_FOUND, "desc").limit(50);
@@ -261,6 +266,10 @@ rhit.CapsManager = class {
 	}
 	get length() {
 		return this._documentSnapshots.length
+	}
+
+	get user() {
+		return this._user;
 	}
 
 	setquery(orderType) {
@@ -344,6 +353,10 @@ rhit.DetailsPageController = class {
 		rhit.singleCapManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
+		if(this._user != rhit.signInUpManager.uid){
+			document.getElementById("editButton").style.display="none";
+			document.getElementById("deleteButton").style.display="none";
+		}
 		document.querySelector("#detailDrinkName").innerHTML = rhit.singleCapManager.drinkName;
 		var quality = rhit.singleCapManager.quality
 		document.querySelector("#detailQuality").innerHTML = "<strong>" + quality.slice(2, quality.length) + "<strong>";
@@ -354,10 +367,10 @@ rhit.DetailsPageController = class {
 }
 
 rhit.SingleCapManager = class {
-	constructor(capId) {
+	constructor(userId,capId) {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
-		this._user = rhit.signInUpManager.uid;
+		this._user = userId;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS).doc(capId);
 	}
 	edit(drinkName, quality, location, dateFound, description, pic) {
@@ -432,7 +445,7 @@ rhit.ExplorePageController = class {
 			const newCard = this._createCard(user);
 
 			newCard.querySelector("#userPic").onclick = (event) => {
-				window.location.href = `/mycollection.html?id=${user.id}`
+				window.location.href = `/mycollection.html?user=${user.id}`
 			};
 			newList.appendChild(newCard);
 		}
@@ -458,7 +471,7 @@ rhit.UsersManager = class {
 	constructor() {
 		this._documentSnapshots = {};
 		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS);
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).limit(50).where(rhit.FB_KEY_IS_PUBLIC, "==",true);
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
@@ -719,7 +732,6 @@ rhit.SignInUpManager = class {
 		return !!this._user;
 	}
 	get uid() {
-		console.log("get uid", this._user.uid);
 		return this._user.uid;
 	}
 }
@@ -776,19 +788,30 @@ rhit.initializePage = function () {
 	}
 
 	if (document.querySelector("#myCollectionPage")) {
-		rhit.capsManager = new rhit.CapsManager();
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		var userId = urlParams.get("user");
+		if(!userId) {
+			console.log("UID not in url");
+			userId = rhit.signInUpManager.uid;
+		}
+		console.log(userId);
+		rhit.capsManager = new rhit.CapsManager(userId);
 		new rhit.CollectionPageController();
 	}
 	if (document.querySelector("#detailsPage")) {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const capId = urlParams.get("id");
-
+		let userId = urlParams.get("user");
+		if(!userId) {
+			userId = rhit.signInUpManager.uid;
+		}
 		if (!capId) {
 			window.location.href = "mycollection.html"
 		}
 		console.log();
-		rhit.singleCapManager = new rhit.SingleCapManager(capId);
+		rhit.singleCapManager = new rhit.SingleCapManager(userId,capId);
 		new rhit.DetailsPageController();
 	}
 	if (document.querySelector("#explorePage")) {
