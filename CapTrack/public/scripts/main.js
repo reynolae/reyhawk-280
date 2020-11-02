@@ -362,7 +362,7 @@ rhit.DetailsPageController = class {
 		rhit.singleCapManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
-		if(this._user != rhit.signInUpManager.uid){
+		if(rhit.singleCapManager.user!= rhit.signInUpManager.uid){
 			document.getElementById("editButton").style.display="none";
 			document.getElementById("deleteButton").style.display="none";
 		}
@@ -417,6 +417,9 @@ rhit.SingleCapManager = class {
 	}
 	stopListening() {
 		this._unsubscribe();
+	}
+	get user() {
+		return this._user;
 	}
 	get drinkName() {
 		return this._documentSnapshot.get(rhit.FB_KEY_DRINK_NAME);
