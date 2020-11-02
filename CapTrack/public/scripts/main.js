@@ -200,6 +200,7 @@ function getCheckedCapsId() {
 	var checkboxes = document.querySelectorAll("input[type='checkbox']");
 	for (let i = 0; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked == true) {
+
 			ids.push(checkboxes[i].value)
 		}
 	}
@@ -218,7 +219,7 @@ rhit.CapsManager = class {
 		this.queryType = "Date";
 	}
 	add(drinkName, quality, location, dateFound, description, pic) {
-		// console.log("adding cap now!");
+		console.log("adding cap now!");
 		this._ref.add({
 				[rhit.FB_KEY_DRINK_NAME]: drinkName,
 				[rhit.FB_KEY_QUALITY]: quality,
@@ -239,7 +240,7 @@ rhit.CapsManager = class {
 		// console.log("One cap slected has id", ids[0]);
 		if (!!ids.length) {
 			for (let i = 0; i < ids.length; i++) {
-				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
+				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
 				rhit.myAccountManager.decNumCaps();
 				ref.delete();
 			}
@@ -638,7 +639,7 @@ rhit.MyAccountManager = class {
 		this._ref.update({
 			[rhit.FB_KEY_NUM_CAPS]: numCaps-1
 		}).then(() => {
-			console.log("Increased numCaps in firestore");
+			console.log("Decreased numCaps in firestore");
 		});
 	}
 	get isPublic() {
