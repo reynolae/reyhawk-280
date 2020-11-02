@@ -568,12 +568,13 @@ rhit.MyAccountManager = class {
 		this._unsubscribe = null;
 		this._uid = uid;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(uid);
-
+		this._isPublic = null;
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
 				this._documentSnapshot = doc;
+				this._isPublic=this.isPublic;
 				changeListener();
 			} else {
 				console.log("No such document!");
