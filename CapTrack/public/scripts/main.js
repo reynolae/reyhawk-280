@@ -746,6 +746,9 @@ rhit.SignInUpManager = class {
 		return !!this._user;
 	}
 	get uid() {
+		if(this._user==null) {
+			return null;
+		}
 		return this._user.uid;
 	}
 }
@@ -765,14 +768,6 @@ rhit.Users = class {
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////              Main                /////////////////////////////////////////////////////////////////////////////
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-rhit.checkForRedirects = function () {
-	// if ((document.querySelector("#signInPage") || (document.querySelector("#signUpPage"))) && rhit.signInUpManager.isSignedIn) {
-	// 	window.location.href = "/"
-	// }
-	if ((document.querySelector("#myCollectionPage") || (document.querySelector("#detailsPage")) || (document.querySelector("#statsPage")) || (document.querySelector("#myAccountPage"))) && !rhit.signInUpManager.isSignedIn) {
-		window.location.href = "/auth_signup.html"
-	}
-}
 
 rhit.initializePage = function () {
 	if (rhit.signInUpManager.isSignedIn) {
@@ -809,6 +804,10 @@ rhit.initializePage = function () {
 			console.log("UID not in url");
 			userId = rhit.signInUpManager.uid;
 		}
+		//if user still doesn't exist send to sign in/up
+		if(!userId) {
+			window.location.href = "/auth_signup.html"
+		}
 		rhit.capsManager = new rhit.CapsManager(userId);
 		new rhit.CollectionPageController();
 	}
@@ -819,6 +818,10 @@ rhit.initializePage = function () {
 		var userId = urlParams.get("user");
 		if(!userId) {
 			userId = rhit.signInUpManager.uid;
+		}
+		//if user still doesn't exist send to sign in/up
+		if(!userId) {
+			window.location.href = "/auth_signup.html"
 		}
 		if (!capId) {
 			window.location.href = "mycollection.html"
@@ -833,6 +836,10 @@ rhit.initializePage = function () {
 	}
 
 	if (document.querySelector("#myAccountPage")) {
+		//if user doesn't exist send to sign in/up
+		if(!rhit.signInUpManager.uid) {
+			window.location.href = "/auth_signup.html"
+		}
 		new rhit.MyAccountPageController();
 	}
 
@@ -853,9 +860,6 @@ rhit.main = function () {
 	rhit.signInUpManager = new rhit.SignInUpManager();
 	rhit.signInUpManager.beginListening(() => {
 		console.log("isSignedIn =", rhit.signInUpManager.isSignedIn);
-		//Check for redirects
-		rhit.checkForRedirects();
-
 		// Page initialization
 		rhit.initializePage();
 	});
