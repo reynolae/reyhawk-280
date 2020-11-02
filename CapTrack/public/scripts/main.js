@@ -77,6 +77,11 @@ rhit.CollectionPageController = class {
 	constructor() {
 
 		// Add cap listeners
+		document.querySelector("#submitSearchCap").addEventListener("click", (event) => {
+			const searchCrit = document.querySelector("#inputSearchCriteria").value;
+			rhit.capsManager.search(searchCrit);
+		})
+
 		document.querySelector("#submitAddCap").addEventListener("click", (event) => {
 			const drinkName = document.querySelector("#inputDrinkName").value;
 			const quality = document.querySelector('input[name="quality"]:checked').value;
@@ -288,6 +293,10 @@ rhit.CapsManager = class {
 		);
 		return cap;
 	}
+
+	// search(searchCrit) {
+		
+	// }
 }
 
 rhit.Caps = class {

@@ -85,8 +85,10 @@
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
-      <i class="material-icons">search</i></button>
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false"
+     data-toggle="modal" data-target="#searchCapDialog">
+      <i class="material-icons">search</i>
+    </button>
   </nav>
 
   <div id="myCollectionPage" class="container page-container">
@@ -94,6 +96,26 @@
       Loading . . .
     </div>
 
+  </div>
+
+  <div class="modal fade" id="searchCapDialog" tabindex="-1" role="dialog" aria-labelledby="Search cap dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Search for a cap</h5>
+        </div>
+        <div class="modal-body">
+          <input id="inputSearchCriteria" class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search"
+            aria-label="Search">
+          <i class="fas fa-search" aria-hidden="true"></i>       
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitSearchCap" type="button" class="btn btn-primary" data-dismiss="modal">SEARCH</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="modal fade" id="addCapDialog" tabindex="-1" role="dialog" aria-labelledby="Add cap dialog"
