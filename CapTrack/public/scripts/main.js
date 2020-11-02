@@ -599,7 +599,8 @@ rhit.MyAccountManager = class {
 		.catch(function (error) {
 			console.log('Error deleting ref:', error);
 		});;
-		admin.auth().deleteUser(this._uid)
+		// admin.auth().deleteUser(this._uid)
+		firebase.auth().currentUser.delete()
 			.then(function () {
 				console.log('Successfully deleted user');
 			})
