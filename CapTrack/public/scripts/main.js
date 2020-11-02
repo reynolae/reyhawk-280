@@ -161,7 +161,7 @@ rhit.CollectionPageController = class {
 			const newCard = this._createCard(cap);
 
 			newCard.querySelector("#capPic").onclick = (event) => {
-				window.location.href = `/details.html?id=${cap.id}`
+				window.location.href = `/details.html?id=${cap.id}&user=${rhit.capsManager.user}`
 			};
 
 			newList.appendChild(newCard);
@@ -362,7 +362,7 @@ rhit.DetailsPageController = class {
 		rhit.singleCapManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
-		if(this._user != rhit.signInUpManager.uid){
+		if(rhit.singleCapManager.user!= rhit.signInUpManager.uid){
 			document.getElementById("editButton").style.display="none";
 			document.getElementById("deleteButton").style.display="none";
 		}
@@ -417,6 +417,9 @@ rhit.SingleCapManager = class {
 	}
 	stopListening() {
 		this._unsubscribe();
+	}
+	get user() {
+		return this._user;
 	}
 	get drinkName() {
 		return this._documentSnapshot.get(rhit.FB_KEY_DRINK_NAME);
@@ -813,7 +816,7 @@ rhit.initializePage = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const capId = urlParams.get("id");
-		let userId = urlParams.get("user");
+		var userId = urlParams.get("user");
 		if(!userId) {
 			userId = rhit.signInUpManager.uid;
 		}
