@@ -161,7 +161,7 @@ rhit.CollectionPageController = class {
 			const newCard = this._createCard(cap);
 
 			newCard.querySelector("#capPic").onclick = (event) => {
-				window.location.href = `/details.html?id=${cap.id}`
+				window.location.href = `/details.html?id=${cap.id}&user=${rhit.capsManager.user}`
 			};
 
 			newList.appendChild(newCard);
@@ -816,7 +816,7 @@ rhit.initializePage = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const capId = urlParams.get("id");
-		let userId = urlParams.get("user");
+		var userId = urlParams.get("user");
 		if(!userId) {
 			userId = rhit.signInUpManager.uid;
 		}
