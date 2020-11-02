@@ -155,7 +155,7 @@ rhit.CollectionPageController = class {
 			document.getElementById("deleteButton").style.display="none";
 		}
 		const newList = htmlToElement('<div id="capsListContainer"></div>')
-		// console.log(rhit.capsManager.length, "length?");
+		console.log(rhit.capsManager.length, "length?");
 		for (let i = 0; i < rhit.capsManager.length; i++) {
 			const cap = rhit.capsManager.getCapAtIndex(i);
 			const newCard = this._createCard(cap);
@@ -198,10 +198,10 @@ rhit.CollectionPageController = class {
 function getCheckedCapsId() {
 	let ids = []
 	var checkboxes = document.querySelectorAll("input[type='checkbox']");
-	for (let i = 0; i < checkboxes.length; i++) {
+	for (let i = 1; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked == true) {
-
-			ids.push(checkboxes[i].value)
+			console.log("Pushing 1 cap to checked. index: ",i);
+			ids.push(checkboxes[i].value);
 		}
 	}
 	return ids;
@@ -621,7 +621,7 @@ rhit.MyAccountManager = class {
 		this._ref.update({
 			[rhit.FB_KEY_IS_PUBLIC]: this._isPublic
 		}).then(() => {
-			//console.log("Changed isPublic in firestore");
+			console.log("Changed isPublic in firestore to ", this._isPublic);
 		});
 	}
 	incNumCaps() {
@@ -809,7 +809,6 @@ rhit.initializePage = function () {
 			console.log("UID not in url");
 			userId = rhit.signInUpManager.uid;
 		}
-		console.log(userId);
 		rhit.capsManager = new rhit.CapsManager(userId);
 		new rhit.CollectionPageController();
 	}
