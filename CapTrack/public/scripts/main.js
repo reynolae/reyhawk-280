@@ -49,7 +49,7 @@ rhit.MainPageController = class {
 			if (rhit.signInUpManager.isSignedIn) {
 				window.location.href = "myAccount.html"
 			} else {
-				window.location.href = "auth_signIn.html"
+				window.location.href = "auth_signin.html"
 			}
 		});
 		this.updatePage();
