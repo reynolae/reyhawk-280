@@ -15,6 +15,7 @@ rhit.FB_KEY_DATE_JOINED = "dateJoined";
 rhit.FB_KEY_IS_PUBLIC = "isPublic";
 rhit.FB_KEY_NUM_CAPS = "numCaps";
 rhit.FB_KEY_USERNAME = "username";
+rhit.FB_KEY_USER_PIC = "userPic";
 
 rhit.FB_COLLECTION_CAPS = "cap";
 rhit.FB_KEY_LOCATION = "location";
@@ -39,7 +40,7 @@ function htmlToElement(html) {
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////           Index Page            /////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Home Page            /////////////////////////////////////////////////////////////////////////////
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rhit.MainPageController = class {
@@ -82,14 +83,25 @@ rhit.CollectionPageController = class {
 			rhit.capsManager.search(searchCrit);
 		})
 
+		document.querySelector("#fileInput").addEventListener("change",(event) => {
+			const file = event.target.files[0];
+			console.log(`Received file named ${file.name}`);
+			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid+file.name);
+			storageRef.put(file).then((uploadTaskSnapshot) => {
+				console.log("The file has been uploaded!");
+				storageRef.getDownloadURL().then((downloadUrl) => {
+					document.getElementById("inputImage").src=downloadUrl;	
+				});
+			});
+		});
+
 		document.querySelector("#submitAddCap").addEventListener("click", (event) => {
 			const drinkName = document.querySelector("#inputDrinkName").value;
 			const quality = document.querySelector('input[name="quality"]:checked').value;
 			const location = document.querySelector("#inputLocation").value;
 			const dateFound = document.querySelector("#inputDateFound").value;
 			const description = document.querySelector("#inputDescription").value;
-			// const pic = document.querySelector("#fileInput").value;
-			const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
+			const pic = document.getElementById("inputImage").src;
 			rhit.capsManager.add(drinkName, quality, location, dateFound, description, pic);
 		});
 		$("#addCapDialog").on("show.bs.modal", (event) => {
@@ -100,6 +112,7 @@ rhit.CollectionPageController = class {
 				quality[i].checked = false;
 			}
 			quality[2].checked = true;
+			document.getElementById("inputImage").src="https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png";
 			document.querySelector("#inputLocation").value = "";
 			document.querySelector("#inputDateFound").value = "";
 			document.querySelector("#inputDescription").value = "";
@@ -470,7 +483,7 @@ rhit.ExplorePageController = class {
 	_createCard(user) {
 		return htmlToElement(`<div id="${user.id}" class="capCard row">
         <div class="col-3">
-          <img id="userPic" src="https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg" alt="example cap">
+          <img id="userPic" src="${user.pic}" alt="example cap">
         </div>
         <div class="col-9">
           <h5>${user.username}</h5>
@@ -507,6 +520,7 @@ rhit.UsersManager = class {
 			docSnapshot.get(rhit.FB_KEY_IS_PUBLIC),
 			docSnapshot.get(rhit.FB_KEY_NUM_CAPS),
 			docSnapshot.get(rhit.FB_KEY_USERNAME),
+			docSnapshot.get(rhit.FB_KEY_USER_PIC),
 		);
 		return user;
 	}
@@ -519,17 +533,27 @@ rhit.UsersManager = class {
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.MyAccountPageController = class {
 	constructor() {
+		document.querySelector("#fileInput").addEventListener("change",(event) => {
+			const file = event.target.files[0];
+			console.log(`Received file named ${file.name}`);
+			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid+file.name);
+			storageRef.put(file).then((uploadTaskSnapshot) => {
+				console.log("The file has been uploaded!");
+				storageRef.getDownloadURL().then((downloadUrl) => {
+					document.getElementById("editImage").src=downloadUrl;	
+				});
+			});
+		});		
 		document.querySelector("#submitEditAccount").addEventListener("click", (event) => {
 			const isPublic = document.querySelector("#editPublicSwitch").checked;
-			// const pic = document.querySelector("#inputFile").value;
-			const pic = "https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png"
+			const pic = document.getElementById("editImage").src;
 			const username = document.querySelector("#editUsername").value;
 			rhit.myAccountManager.edit(isPublic,username,pic);
 		});
 		$("#editAccountDialog").on("show.bs.modal", (event) => {
 			// pre animation
 			document.querySelector("#editPublicSwitch").checked = rhit.myAccountManager.isPublic;
-			//document.querySelector("#inputImage").value = rhit.myAccountManager.pic;
+			document.getElementById("editImage").src= rhit.myAccountManager.pic;
 			document.querySelector("#editUsername").value = rhit.myAccountManager.username;
 		});
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
@@ -560,6 +584,7 @@ rhit.MyAccountPageController = class {
 		document.querySelector("#numCapsText").innerHTML = rhit.myAccountManager.numCaps;
 		document.querySelector("#isPublicText").innerHTML = "<strong>" +valueIsPublic + "<strong>";
 		document.querySelector("#detailDate").innerHTML = rhit.myAccountManager.dateJoined.toDate();
+		document.getElementById("userPic").src = rhit.myAccountManager.pic;
 	}
 }
 rhit.MyAccountManager = class {
@@ -588,7 +613,7 @@ rhit.MyAccountManager = class {
 		this._ref.update({
 			[rhit.FB_KEY_IS_PUBLIC]: isPublic,
 			[rhit.FB_KEY_USERNAME]: username,
-			[rhit.FB_KEY_PIC]: pic,
+			[rhit.FB_KEY_USER_PIC]: pic,
 		})
 		.then(function () {
 			console.log("Document successfully updated!");
@@ -654,6 +679,9 @@ rhit.MyAccountManager = class {
 	}
 	get username() {
 		return this._documentSnapshot.get(rhit.FB_KEY_USERNAME);
+	}
+	get pic() {
+		return this._documentSnapshot.get(rhit.FB_KEY_USER_PIC);
 	}
 }
 
@@ -724,6 +752,7 @@ rhit.SignInUpManager = class {
 					[rhit.FB_KEY_IS_PUBLIC]: isPublic.checked,
 					[rhit.FB_KEY_NUM_CAPS]: 0,
 					[rhit.FB_KEY_USERNAME]: userNameResult,
+					[rhit.FB_KEY_USER_PIC]: "https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png",
 				}).then(() => {
 					window.location.href = "/";
 				})
@@ -755,12 +784,13 @@ rhit.SignInUpManager = class {
 }
 
 rhit.Users = class {
-	constructor(id, dateJoined, isPublic, numCaps, username) {
+	constructor(id, dateJoined, isPublic, numCaps, username, pic) {
 		this.id = id;
 		this.dateJoined = dateJoined;
 		this.isPublic = isPublic;
 		this.numCaps = numCaps;
 		this.username = username;
+		this.pic = pic;
 	}
 }
 
