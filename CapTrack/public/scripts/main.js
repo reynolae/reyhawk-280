@@ -544,6 +544,8 @@ rhit.StatsPageController = class {
 		this._updatePie();
 	}
 
+
+	// Template D3 line graph from: https://www.d3-graph-gallery.com/graph/line_basic.html
 	_updateLine() {
 		// set the dimensions and margins of the graph
 		var margin = {
@@ -564,98 +566,90 @@ rhit.StatsPageController = class {
 			.attr("transform",
 				"translate(" + margin.left + "," + margin.top + ")");
 
-		//Read the data
-		d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv",
 
-			// When reading the csv, I must format variables:
-			function (d) {
-				return {
-					date: d3.timeParse("%Y-%m-%d")(d.date),
-					value: d.value
-				}
-			},
+		var data = rhit.statsManager.getDates();
 
-			// Now I can use this dataset:
-			function (data) {
+		// Add X axis --> it is a date format
+		var x = d3.scaleTime()
+			.domain(d3.extent(data, function (d) {
+				return d.date;
+			}))
+			.range([0, width]);
+		svg.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x));
 
-				// Add X axis --> it is a date format
-				var x = d3.scaleTime()
-					.domain(d3.extent(data, function (d) {
-						return d.date;
-					}))
-					.range([0, width]);
-				svg.append("g")
-					.attr("transform", "translate(0," + height + ")")
-					.call(d3.axisBottom(x));
+		// Max value observed:
+		const max = d3.max(data, function (d) {
+			return +d.value;
+		})
 
-				// Max value observed:
-				const max = d3.max(data, function (d) {
-					return +d.value;
+		// Add Y axis
+		var y = d3.scaleLinear()
+			.domain([0, max])
+			.range([height, 0]);
+		svg.append("g")
+			.call(d3.axisLeft(y));
+
+		// create a tooltip
+		var Tooltip = d3.select("#capsOverTime")
+			.append("div")
+			.style("opacity", 0)
+			.attr("class", "tooltip")
+			.style("background-color", "white")
+			.style("border", "solid")
+			.style("border-width", "2px")
+			.style("border-radius", "5px")
+			.style("padding", "5px")
+
+		// Three function that change the tooltip when user hover / move / leave a cell
+		var mouseover = function (d) {
+			Tooltip
+				.style("opacity", 1)
+			d3.select(this)
+				.style("stroke", "black")
+				.style("opacity", 1)
+		}
+		var mousemove = function (d) {
+			var x0 = x.invert(d3.mouse(this)[0]);
+			var bisect = d3.bisector(function (d) {
+				return d.date;
+			}).left;
+			var i = bisect(data, x0, 1);
+			var point = data[i];
+			//console.log("over", point);
+			Tooltip
+				.html("Date: " + point.dateString + "<br>Value: " + point.value)
+				.style("left", (d3.mouse(this)[0]+6) + "px")
+				.style("top", (d3.mouse(this)[1]) + "px")
+		}
+		var mouseleave = function (d) {
+			Tooltip
+				.style("opacity", 0)
+		}
+
+		// Add the line
+		svg.append("path")
+			.datum(data)
+			.attr("fill", "none")
+			.attr("stroke", "black")
+			.attr("stroke-width", 2)
+			.attr("d", d3.line()
+				.x(function (d) {
+					console.log(d.date);
+					return x(d.date)
 				})
-
-				// Add Y axis
-				var y = d3.scaleLinear()
-					.domain([0, max])
-					.range([height, 0]);
-				svg.append("g")
-					.call(d3.axisLeft(y));
-
-				// create a tooltip
-				var Tooltip = d3.select("#capsOverTime")
-					.append("div")
-					.style("opacity", 0)
-					.attr("class", "tooltip")
-					.style("background-color", "white")
-					.style("border", "solid")
-					.style("border-width", "2px")
-					.style("border-radius", "5px")
-					.style("padding", "5px")
-
-				// Three function that change the tooltip when user hover / move / leave a cell
-				var mouseover = function (d) {
-					Tooltip
-						.style("opacity", 1)
-					d3.select(this)
-						.style("stroke", "black")
-						.style("opacity", 1)
-				}
-				var mousemove = function (d) {
-					var x0 = x.invert(d3.mouse(this)[0]);
-					var bisect = d3.bisector(function (d) {
-						return d.date;
-					}).left;
-					var i = bisect(data, x0, 1);
-					var point = data[i];
-					//console.log("over", point);
-					Tooltip
-						.html("Date: " + point.date + "<br>Value: " + point.value)
-						.style("left", (d3.mouse(this)[0] + 10) + "px")
-						.style("top", (d3.mouse(this)[1] + 10) + "px")
-				}
-				var mouseleave = function (d) {
-					Tooltip
-						.style("opacity", 0)
-				}
-
-				// Add the line
-				svg.append("path")
-					.datum(data)
-					.attr("fill", "none")
-					.attr("stroke", "black")
-					.attr("stroke-width", 2)
-					.attr("d", d3.line()
-						.x(function (d) {
-							return x(d.date)
-						})
-						.y(function (d) {
-							return y(d.value)
-						})
-					)
-					.on("mouseover", mouseover)
-					.on("mousemove", mousemove)
-					.on("mouseleave", mouseleave)
-			});
+				.y(function (d) {
+					return y(d.value)
+				})
+			)
+			.on("mouseover", mouseover)
+			.on("mousemove", mousemove)
+			.on("mouseleave", mouseleave)
 	}
+
+
+	// Template d3 pir chart from: https://www.d3-graph-gallery.com/graph/pie_changeData.html
 	_updatePie() {
 		// set the dimensions and margins of the graph
 		var width = 450;
@@ -673,64 +667,70 @@ rhit.StatsPageController = class {
 			.append("g")
 			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-		// create 2 data_set
-		var data1 = {
-			a: 9,
-			b: 20,
-			c: 30,
-			d: 8,
-			e: 12
-		}
+		var data = rhit.statsManager.getLocations();
 
 		// set the color scale
-		var color = d3.scaleOrdinal(d3.schemeCategory20)
-			.domain(["a", "b", "c", "d", "e", "f"])
+		var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-		// A function that create / update the plot for a given variable:
-		function update(data) {
+		// create a tooltip
+		var Tooltip = d3.select("#capsInPlaces")
+			.append("div")
+			.attr("class", "tooltip")
+			.style("opacity", 0)
+			.style("background-color", "white")
+			.style("border", "solid")
+			.style("border-width", "2px")
+			.style("border-radius", "5px")
+			.style("padding", "5px")
 
-			// Compute the position of each group on the pie:
-			var pie = d3.pie()
-				.value(function (d) {
-					return d.value;
-				})
-				.sort(function (a, b) {
-					console.log(a);
-					return d3.ascending(a.key, b.key);
-				}) // This make sure that group order remains the same in the pie chart
-			var data_ready = pie(d3.entries(data))
-
-			// map to data
-			var u = svg.selectAll("path")
-				.data(data_ready)
-
-			// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-			u
-				.enter()
-				.append('path')
-				.merge(u)
-				.transition()
-				.duration(1000)
-				.attr('d', d3.arc()
-					.innerRadius(0)
-					.outerRadius(radius)
-				)
-				.attr('fill', function (d) {
-					return (color(d.data.key))
-				})
-				.attr("stroke", "white")
-				.style("stroke-width", "2px")
-				.style("opacity", 1)
-
-			// remove the group that is not present anymore
-			u
-				.exit()
-				.remove()
-
+		var mouseover = function (d) {
+			Tooltip.style("opacity", 1)
 		}
+		var mousemove = function (d) {
 
-		// Initialize the plot with the first dataset
-		update(data1)
+			Tooltip.html("Location: " + d.data.key+"<br># Caps: "+d.data.value)
+				.style("left", (d3.mouse(this)[0]+200) + "px")
+				.style("top", (d3.mouse(this)[1]+200) + "px");
+		};
+
+		var mouseout = function () {
+			Tooltip.style("opacity", 0);
+		};
+
+		// Compute the position of each group on the pie:
+		var pie = d3.pie()
+			.value(function (d) {
+				return d.value;
+			})
+			.sort(function (a, b) {
+				return d3.ascending(a.key, b.key);
+			}) // This make sure that group order remains the same in the pie chart
+		var data_ready = pie(d3.entries(data))
+
+		// map to data
+		var u = svg.selectAll("path")
+			.data(data_ready)
+
+		// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+		u
+			.enter()
+			.append('path')
+			.on("mouseover", mouseover)
+			.on("mousemove", mousemove)
+			.on("mouseout", mouseout)
+			.merge(u)
+			.transition()
+			.duration(1000)
+			.attr('d', d3.arc()
+				.innerRadius(0)
+				.outerRadius(radius)
+			)
+			.attr('fill', function (d) {
+				return (color(d.data.key))
+			})
+			.attr("stroke", "white")
+			.style("stroke-width", "2px")
+			.style("opacity", 1)
 	}
 }
 
@@ -739,11 +739,11 @@ rhit.StatsManager = class {
 		this._documentSnapshots = [];
 		this._unsubscribe = null;
 		this._uid = uid;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(uid).collection(rhit.FB_COLLECTION_CAPS);
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(uid).collection(rhit.FB_COLLECTION_CAPS).orderBy(rhit.FB_KEY_DATE_FOUND);
 	}
-	beginListening(changeListener){
+	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
-			console.log(this._documentSnapshots);
+			//console.log(this._documentSnapshots);
 			this._documentSnapshots = querySnapshot.docs;
 			changeListener();
 		});
@@ -756,35 +756,63 @@ rhit.StatsManager = class {
 	}
 	getDateAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		return	docSnapshot.get(rhit.FB_KEY_DATE_FOUND);
+		return docSnapshot.get(rhit.FB_KEY_DATE_FOUND);
 	}
 	getLocationAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		return	docSnapshot.get(rhit.FB_KEY_LOCATION);
+		return docSnapshot.get(rhit.FB_KEY_LOCATION);
 	}
 
 	getDates() {
-		let dates = [];
-		let caps = this._documentSnapshots.orderBy(rhit.FB_KEY_DATE_FOUND, "desc");
-		let count = 0;
-		for (let i = 0; i<caps.length(); i++) {
-			dates[i] = caps[i].get(rhit.FB_KEY_DATE_FOUND);
-			console.log(dates[i]);
-
+		var dates = [];
+		var counts = [];
+		var caps = this._documentSnapshots;
+		var total = 0;
+		for (let i = 0; i < caps.length; i++) {
+			var currentDate = caps[i].get(rhit.FB_KEY_DATE_FOUND)
+			// console.log(`At ${i} date is ${currentDate}`);
+			total++;
+			if (dates.includes(currentDate)) {
+				let i = dates.indexOf(currentDate);
+				counts[i] = total;
+			} else {
+				dates.push(currentDate);
+				counts.push(total);
+			}
 		}
-
-
-		return dates;	
+		var objects = [];
+		for (let i = 0; i < dates.length; i++) {
+			objects.push({
+				date: d3.timeParse("%Y-%m-%d")(dates[i]),
+				dateString: dates[i],
+				value: counts[i],
+			});
+		}
+		console.log(objects);
+		return objects;
 	}
 
 	getLocations() {
-		let locations = [];
-		let caps = this._documentSnapshots.orderBy(rhit.FB_KEY_DATE_FOUND, "desc");
-		for (let i = 0; i<caps.length();i++) {
-			locations[i] = caps[i].get(rhit.FB_KEY_LOCATION);
-			console.log(locations[i]);
+		var locations = [];
+		var counts = [];
+		var caps = this._documentSnapshots;
+		for (let i = 0; i < caps.length; i++) {
+			var currentLocation = caps[i].get(rhit.FB_KEY_LOCATION);
+			// console.log(`At ${i} location is ${currentLocation}`);
+			if (locations.includes(currentLocation)) {
+				// console.log("Repeat!");
+				let i = locations.indexOf(currentLocation);
+				counts[i]++;
+			} else {
+				locations.push(currentLocation);
+				counts.push(1);
+			}
 		}
-		return locations;
+		var objects = {};
+		for (let i = 0; i < locations.length; i++) {
+			objects[locations[i]] = counts[i];
+		}
+		return objects;
 	}
 }
 
@@ -1135,7 +1163,7 @@ rhit.initializePage = function () {
 			rhit.statsManager = new rhit.StatsManager(rhit.signInUpManager.uid);
 			new rhit.StatsPageController();
 		}
-		
+
 	}
 	if (document.querySelector("#myAccountPage")) {
 		//if user doesn't exist send to sign in/up

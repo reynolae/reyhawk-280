@@ -329,3 +329,27 @@ nav .dropdown-item {
     border-radius: 50%;
 }
 
+
+
+/* Stats */
+.statsGraph h3{
+    text-align: center;
+}
+
+#statsPage {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#statsTime svg {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+}
+#statsLocation svg {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

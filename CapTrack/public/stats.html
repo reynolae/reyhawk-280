@@ -64,11 +64,17 @@
     <span>&nbsp;</span>
   </nav>
 
-  <div id="statsPage" class="container page-container">
-    <div id="capsOverTime"></div>
-    <br>
-    <br>
-    <div id="capsInPlaces"></div>
+  <div id="statsPage" class="row container page-container">
+    <div id="statsTime" class="col-12 col-lg-6 statsGraph">
+      <h3>Number of Caps over Time</h3>
+      <br>
+      <div id="capsOverTime"></div>
+    </div>
+    <div id="statsLocation" class="col-12 col-lg-6 statsGraph">
+      <h3>Number of Caps per Location</h3>
+      <div id="capsInPlaces"></div>
+    </div>
+    
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
