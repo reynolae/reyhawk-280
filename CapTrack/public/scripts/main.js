@@ -525,7 +525,7 @@ rhit.StatsPageController = class {
 		rhit.statsManager.beginListening(this.updateView.bind(this));
 	}
 	updateView() {
-		if (rhit.statsManager.length < 2) {
+		if (rhit.statsManager.length < 3) {
 			document.getElementById("noCapsText").innerHTML = "Add more caps to see your statistics!";
 			var statsTexts = document.querySelectorAll(".statsText");
 			statsTexts[0].innerHTML ="";
