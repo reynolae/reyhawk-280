@@ -762,6 +762,30 @@ rhit.StatsManager = class {
 		const docSnapshot = this._documentSnapshots[index];
 		return	docSnapshot.get(rhit.FB_KEY_LOCATION);
 	}
+
+	getDates() {
+		let dates = [];
+		let caps = this._documentSnapshots.orderBy(rhit.FB_KEY_DATE_FOUND, "desc");
+		let count = 0;
+		for (let i = 0; i<caps.length(); i++) {
+			dates[i] = caps[i].get(rhit.FB_KEY_DATE_FOUND);
+			console.log(dates[i]);
+
+		}
+
+
+		return dates;	
+	}
+
+	getLocations() {
+		let locations = [];
+		let caps = this._documentSnapshots.orderBy(rhit.FB_KEY_DATE_FOUND, "desc");
+		for (let i = 0; i<caps.length();i++) {
+			locations[i] = caps[i].get(rhit.FB_KEY_LOCATION);
+			console.log(locations[i]);
+		}
+		return locations;
+	}
 }
 
 
