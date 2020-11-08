@@ -30,6 +30,7 @@ rhit.singleCapManager = null;
 rhit.signInUpManager = null;
 rhit.usersManager = null;
 rhit.myAccountManager = null;
+rhit.statsManager = null;
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -83,14 +84,14 @@ rhit.CollectionPageController = class {
 			rhit.capsManager.search(searchCrit);
 		})
 
-		document.querySelector("#fileInput").addEventListener("change",(event) => {
+		document.querySelector("#fileInput").addEventListener("change", (event) => {
 			const file = event.target.files[0];
 			console.log(`Received file named ${file.name}`);
-			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid+file.name);
+			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid + file.name);
 			storageRef.put(file).then((uploadTaskSnapshot) => {
 				console.log("The file has been uploaded!");
 				storageRef.getDownloadURL().then((downloadUrl) => {
-					document.getElementById("inputImage").src=downloadUrl;	
+					document.getElementById("inputImage").src = downloadUrl;
 				});
 			});
 		});
@@ -112,7 +113,7 @@ rhit.CollectionPageController = class {
 				quality[i].checked = false;
 			}
 			quality[2].checked = true;
-			document.getElementById("inputImage").src="https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png";
+			document.getElementById("inputImage").src = "https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png";
 			document.querySelector("#inputLocation").value = "";
 			document.querySelector("#inputDateFound").value = "";
 			document.querySelector("#inputDescription").value = "";
@@ -162,10 +163,10 @@ rhit.CollectionPageController = class {
 		rhit.capsManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
-		if(rhit.capsManager.user != rhit.signInUpManager.uid){
-			document.getElementById("collectionTitleText").innerHTML="Explore - Collection"
-			document.getElementById("addButton").style.display="none";
-			document.getElementById("deleteButton").style.display="none";
+		if (rhit.capsManager.user != rhit.signInUpManager.uid) {
+			document.getElementById("collectionTitleText").innerHTML = "Explore - Collection"
+			document.getElementById("addButton").style.display = "none";
+			document.getElementById("deleteButton").style.display = "none";
 		}
 		const newList = htmlToElement('<div id="capsListContainer"></div>')
 		console.log(rhit.capsManager.length, "length?");
@@ -213,7 +214,7 @@ function getCheckedCapsId() {
 	var checkboxes = document.querySelectorAll("input[type='checkbox']");
 	for (let i = 1; i < checkboxes.length; i++) {
 		if (checkboxes[i].checked == true) {
-			console.log("Pushing 1 cap to checked. index: ",i);
+			console.log("Pushing 1 cap to checked. index: ", i);
 			ids.push(checkboxes[i].value);
 		}
 	}
@@ -309,7 +310,7 @@ rhit.CapsManager = class {
 	}
 
 	// search(searchCrit) {
-		
+
 	// }
 }
 
@@ -376,9 +377,9 @@ rhit.DetailsPageController = class {
 		rhit.singleCapManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
-		if(rhit.singleCapManager.user!= rhit.signInUpManager.uid){
-			document.getElementById("editButton").style.display="none";
-			document.getElementById("deleteButton").style.display="none";
+		if (rhit.singleCapManager.user != rhit.signInUpManager.uid) {
+			document.getElementById("editButton").style.display = "none";
+			document.getElementById("deleteButton").style.display = "none";
 		}
 		document.querySelector("#detailDrinkName").innerHTML = rhit.singleCapManager.drinkName;
 		var quality = rhit.singleCapManager.quality
@@ -390,7 +391,7 @@ rhit.DetailsPageController = class {
 }
 
 rhit.SingleCapManager = class {
-	constructor(userId,capId) {
+	constructor(userId, capId) {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
 		this._user = userId;
@@ -497,7 +498,7 @@ rhit.UsersManager = class {
 	constructor() {
 		this._documentSnapshots = {};
 		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).limit(50).where(rhit.FB_KEY_IS_PUBLIC, "==",true);
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).limit(50).where(rhit.FB_KEY_IS_PUBLIC, "==", true);
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
@@ -528,32 +529,269 @@ rhit.UsersManager = class {
 
 
 
+
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////           Stats Page            //////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+rhit.StatsPageController = class {
+	constructor() {
+		console.log("On the stats page!");
+		rhit.statsManager.beginListening(this.updateView.bind(this));
+	}
+	updateView() {
+		this._updateLine();
+		this._updatePie();
+	}
+
+	_updateLine() {
+		// set the dimensions and margins of the graph
+		var margin = {
+				top: 10,
+				right: 30,
+				bottom: 30,
+				left: 60
+			},
+			width = 460 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
+
+		// append the svg object to the body of the page
+		var svg = d3.select("#capsOverTime")
+			.append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform",
+				"translate(" + margin.left + "," + margin.top + ")");
+
+		//Read the data
+		d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv",
+
+			// When reading the csv, I must format variables:
+			function (d) {
+				return {
+					date: d3.timeParse("%Y-%m-%d")(d.date),
+					value: d.value
+				}
+			},
+
+			// Now I can use this dataset:
+			function (data) {
+
+				// Add X axis --> it is a date format
+				var x = d3.scaleTime()
+					.domain(d3.extent(data, function (d) {
+						return d.date;
+					}))
+					.range([0, width]);
+				svg.append("g")
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x));
+
+				// Max value observed:
+				const max = d3.max(data, function (d) {
+					return +d.value;
+				})
+
+				// Add Y axis
+				var y = d3.scaleLinear()
+					.domain([0, max])
+					.range([height, 0]);
+				svg.append("g")
+					.call(d3.axisLeft(y));
+
+				// create a tooltip
+				var Tooltip = d3.select("#capsOverTime")
+					.append("div")
+					.style("opacity", 0)
+					.attr("class", "tooltip")
+					.style("background-color", "white")
+					.style("border", "solid")
+					.style("border-width", "2px")
+					.style("border-radius", "5px")
+					.style("padding", "5px")
+
+				// Three function that change the tooltip when user hover / move / leave a cell
+				var mouseover = function (d) {
+					Tooltip
+						.style("opacity", 1)
+					d3.select(this)
+						.style("stroke", "black")
+						.style("opacity", 1)
+				}
+				var mousemove = function (d) {
+					var x0 = x.invert(d3.mouse(this)[0]);
+					var bisect = d3.bisector(function (d) {
+						return d.date;
+					}).left;
+					var i = bisect(data, x0, 1);
+					var point = data[i];
+					//console.log("over", point);
+					Tooltip
+						.html("Date: " + point.date + "<br>Value: " + point.value)
+						.style("left", (d3.mouse(this)[0] + 10) + "px")
+						.style("top", (d3.mouse(this)[1] + 10) + "px")
+				}
+				var mouseleave = function (d) {
+					Tooltip
+						.style("opacity", 0)
+				}
+
+				// Add the line
+				svg.append("path")
+					.datum(data)
+					.attr("fill", "none")
+					.attr("stroke", "black")
+					.attr("stroke-width", 2)
+					.attr("d", d3.line()
+						.x(function (d) {
+							return x(d.date)
+						})
+						.y(function (d) {
+							return y(d.value)
+						})
+					)
+					.on("mouseover", mouseover)
+					.on("mousemove", mousemove)
+					.on("mouseleave", mouseleave)
+			});
+	}
+	_updatePie() {
+		// set the dimensions and margins of the graph
+		var width = 450;
+		var height = 450;
+		var margin = 40;
+
+		// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+		var radius = Math.min(width, height) / 2 - margin
+
+		// append the svg object to the div called 'my_dataviz'
+		var svg = d3.select("#capsInPlaces")
+			.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+		// create 2 data_set
+		var data1 = {
+			a: 9,
+			b: 20,
+			c: 30,
+			d: 8,
+			e: 12
+		}
+
+		// set the color scale
+		var color = d3.scaleOrdinal(d3.schemeCategory20)
+			.domain(["a", "b", "c", "d", "e", "f"])
+
+		// A function that create / update the plot for a given variable:
+		function update(data) {
+
+			// Compute the position of each group on the pie:
+			var pie = d3.pie()
+				.value(function (d) {
+					return d.value;
+				})
+				.sort(function (a, b) {
+					console.log(a);
+					return d3.ascending(a.key, b.key);
+				}) // This make sure that group order remains the same in the pie chart
+			var data_ready = pie(d3.entries(data))
+
+			// map to data
+			var u = svg.selectAll("path")
+				.data(data_ready)
+
+			// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+			u
+				.enter()
+				.append('path')
+				.merge(u)
+				.transition()
+				.duration(1000)
+				.attr('d', d3.arc()
+					.innerRadius(0)
+					.outerRadius(radius)
+				)
+				.attr('fill', function (d) {
+					return (color(d.data.key))
+				})
+				.attr("stroke", "white")
+				.style("stroke-width", "2px")
+				.style("opacity", 1)
+
+			// remove the group that is not present anymore
+			u
+				.exit()
+				.remove()
+
+		}
+
+		// Initialize the plot with the first dataset
+		update(data1)
+	}
+}
+
+rhit.StatsManager = class {
+	constructor(uid) {
+		this._documentSnapshots = [];
+		this._unsubscribe = null;
+		this._uid = uid;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(uid).collection(rhit.FB_COLLECTION_CAPS);
+	}
+	beginListening(changeListener){
+		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
+			console.log(this._documentSnapshots);
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+	get length() {
+		return this._documentSnapshots.length
+	}
+	getDateAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		return	docSnapshot.get(rhit.FB_KEY_DATE_FOUND);
+	}
+	getLocationAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		return	docSnapshot.get(rhit.FB_KEY_LOCATION);
+	}
+}
+
+
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////           My Account Page            //////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.MyAccountPageController = class {
 	constructor() {
-		document.querySelector("#fileInput").addEventListener("change",(event) => {
+		document.querySelector("#fileInput").addEventListener("change", (event) => {
 			const file = event.target.files[0];
 			console.log(`Received file named ${file.name}`);
-			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid+file.name);
+			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid + file.name);
 			storageRef.put(file).then((uploadTaskSnapshot) => {
 				console.log("The file has been uploaded!");
 				storageRef.getDownloadURL().then((downloadUrl) => {
-					document.getElementById("editImage").src=downloadUrl;	
+					document.getElementById("editImage").src = downloadUrl;
 				});
 			});
-		});		
+		});
 		document.querySelector("#submitEditAccount").addEventListener("click", (event) => {
 			const isPublic = document.querySelector("#editPublicSwitch").checked;
 			const pic = document.getElementById("editImage").src;
 			const username = document.querySelector("#editUsername").value;
-			rhit.myAccountManager.edit(isPublic,username,pic);
+			rhit.myAccountManager.edit(isPublic, username, pic);
 		});
 		$("#editAccountDialog").on("show.bs.modal", (event) => {
 			// pre animation
 			document.querySelector("#editPublicSwitch").checked = rhit.myAccountManager.isPublic;
-			document.getElementById("editImage").src= rhit.myAccountManager.pic;
+			document.getElementById("editImage").src = rhit.myAccountManager.pic;
 			document.querySelector("#editUsername").value = rhit.myAccountManager.username;
 		});
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
@@ -576,13 +814,13 @@ rhit.MyAccountPageController = class {
 	updateView() {
 		document.querySelector("#usernameText").innerHTML = rhit.myAccountManager.username;
 		let valueIsPublic;
-		if(rhit.myAccountManager.isPublic){
+		if (rhit.myAccountManager.isPublic) {
 			valueIsPublic = "Public";
 		} else {
-			valueIsPublic= "Private";
+			valueIsPublic = "Private";
 		}
 		document.querySelector("#numCapsText").innerHTML = rhit.myAccountManager.numCaps;
-		document.querySelector("#isPublicText").innerHTML = "<strong>" +valueIsPublic + "<strong>";
+		document.querySelector("#isPublicText").innerHTML = "<strong>" + valueIsPublic + "<strong>";
 		document.querySelector("#detailDate").innerHTML = rhit.myAccountManager.dateJoined.toDate();
 		document.getElementById("userPic").src = rhit.myAccountManager.pic;
 	}
@@ -599,7 +837,7 @@ rhit.MyAccountManager = class {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
 				this._documentSnapshot = doc;
-				this._isPublic=this.isPublic;
+				this._isPublic = this.isPublic;
 				changeListener();
 			} else {
 				console.log("No such document!");
@@ -609,26 +847,26 @@ rhit.MyAccountManager = class {
 	stopListening() {
 		this._unsubscribe();
 	}
-	edit(isPublic,username,pic) {
+	edit(isPublic, username, pic) {
 		this._ref.update({
-			[rhit.FB_KEY_IS_PUBLIC]: isPublic,
-			[rhit.FB_KEY_USERNAME]: username,
-			[rhit.FB_KEY_USER_PIC]: pic,
-		})
-		.then(function () {
-			console.log("Document successfully updated!");
-		})
-		.catch(function (error) {
-			console.log("Error updating document: ", error);
-		});
+				[rhit.FB_KEY_IS_PUBLIC]: isPublic,
+				[rhit.FB_KEY_USERNAME]: username,
+				[rhit.FB_KEY_USER_PIC]: pic,
+			})
+			.then(function () {
+				console.log("Document successfully updated!");
+			})
+			.catch(function (error) {
+				console.log("Error updating document: ", error);
+			});
 	}
 	delete() {
 		this._ref.delete().then(function () {
-			console.log('Successfully deleted ref');
-		})
-		.catch(function (error) {
-			console.log('Error deleting ref:', error);
-		});;
+				console.log('Successfully deleted ref');
+			})
+			.catch(function (error) {
+				console.log('Error deleting ref:', error);
+			});;
 		// admin.auth().deleteUser(this._uid)
 		firebase.auth().currentUser.delete()
 			.then(function () {
@@ -654,7 +892,7 @@ rhit.MyAccountManager = class {
 		console.log("TODO: increase numCaps by 1");
 		let numCaps = this.numCaps;
 		this._ref.update({
-			[rhit.FB_KEY_NUM_CAPS]: numCaps+1
+			[rhit.FB_KEY_NUM_CAPS]: numCaps + 1
 		}).then(() => {
 			console.log("Increased numCaps in firestore");
 		});
@@ -663,7 +901,7 @@ rhit.MyAccountManager = class {
 		console.log("TODO: descrease numCaps by 1");
 		let numCaps = this.numCaps;
 		this._ref.update({
-			[rhit.FB_KEY_NUM_CAPS]: numCaps-1
+			[rhit.FB_KEY_NUM_CAPS]: numCaps - 1
 		}).then(() => {
 			console.log("Decreased numCaps in firestore");
 		});
@@ -727,16 +965,16 @@ rhit.SignInUpManager = class {
 	signIn() {
 		console.log(`log in for email: ${inputEmail.value} password: ${inputPassword.value}`);
 		firebase.auth().signInWithEmailAndPassword(inputEmail.value, inputPassword.value)
-		.then(function(){
-			window.location.href='/';
-		}).catch(function (error) {
-			// Handle Errors here.
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			
-			document.getElementById("loginFailText").innerHTML="&#9888; "+errorMessage;
-			console.log("exsisting account log in error", errorCode, errorMessage);
-		});
+			.then(function () {
+				window.location.href = '/';
+			}).catch(function (error) {
+				// Handle Errors here.
+				var errorCode = error.code;
+				var errorMessage = error.message;
+
+				document.getElementById("loginFailText").innerHTML = "&#9888; " + errorMessage;
+				console.log("exsisting account log in error", errorCode, errorMessage);
+			});
 	}
 	signUp(email, password, isPublic) {
 		console.log(`create account for email: ${email.value} password: ${password.value} isPublic: ${isPublic.checked}`);
@@ -762,7 +1000,7 @@ rhit.SignInUpManager = class {
 				var errorCode = error.code;
 				var errorMessage = error.message;
 				// ...
-				document.getElementById("loginFailText").innerHTML="&#9888; "+errorMessage;
+				document.getElementById("loginFailText").innerHTML = "&#9888; " + errorMessage;
 				console.log("Create Account error", errorCode, errorMessage);
 			});
 
@@ -776,7 +1014,7 @@ rhit.SignInUpManager = class {
 		return !!this._user;
 	}
 	get uid() {
-		if(this._user==null) {
+		if (this._user == null) {
 			return null;
 		}
 		return this._user.uid;
@@ -803,9 +1041,9 @@ rhit.Users = class {
 rhit.initializePage = function () {
 	if (rhit.signInUpManager.isSignedIn) {
 
-		rhit.myAccountManager=new this.MyAccountManager(rhit.signInUpManager.uid);
+		rhit.myAccountManager = new this.MyAccountManager(rhit.signInUpManager.uid);
 		rhit.myAccountManager.beginListening(() => {
-			if(rhit.myAccountManager.isPublic) {
+			if (rhit.myAccountManager.isPublic) {
 				document.getElementById("publicSwitch").checked = true;
 			} else {
 				document.getElementById("publicSwitch").checked = false;
@@ -831,12 +1069,12 @@ rhit.initializePage = function () {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		var userId = urlParams.get("user");
-		if(!userId) {
+		if (!userId) {
 			console.log("UID not in url");
 			userId = rhit.signInUpManager.uid;
 		}
 		//if user still doesn't exist send to sign in/up
-		if(!userId) {
+		if (!userId) {
 			window.location.href = "/auth_signup.html"
 		}
 		rhit.capsManager = new rhit.CapsManager(userId);
@@ -847,28 +1085,37 @@ rhit.initializePage = function () {
 		const urlParams = new URLSearchParams(queryString);
 		const capId = urlParams.get("id");
 		var userId = urlParams.get("user");
-		if(!userId) {
+		if (!userId) {
 			userId = rhit.signInUpManager.uid;
 		}
 		//if user still doesn't exist send to sign in/up
-		if(!userId) {
+		if (!userId) {
 			window.location.href = "/auth_signup.html"
 		}
 		if (!capId) {
 			window.location.href = "mycollection.html"
 		}
 		console.log();
-		rhit.singleCapManager = new rhit.SingleCapManager(userId,capId);
+		rhit.singleCapManager = new rhit.SingleCapManager(userId, capId);
 		new rhit.DetailsPageController();
 	}
 	if (document.querySelector("#explorePage")) {
 		rhit.usersManager = new rhit.UsersManager();
 		new rhit.ExplorePageController();
 	}
-
+	if (document.querySelector("#statsPage")) {
+		//if user doesn't exist send to sign in/up
+		if (!rhit.signInUpManager.uid) {
+			window.location.href = "/auth_signup.html"
+		} else {
+			rhit.statsManager = new rhit.StatsManager(rhit.signInUpManager.uid);
+			new rhit.StatsPageController();
+		}
+		
+	}
 	if (document.querySelector("#myAccountPage")) {
 		//if user doesn't exist send to sign in/up
-		if(!rhit.signInUpManager.uid) {
+		if (!rhit.signInUpManager.uid) {
 			window.location.href = "/auth_signup.html"
 		}
 		new rhit.MyAccountPageController();
