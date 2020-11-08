@@ -59,7 +59,6 @@ rhit.MainPageController = class {
 	updatePage() {
 		let userText = document.getElementById("userText");
 		if (rhit.signInUpManager.isSignedIn) {
-			//console.log("now I'm super out here",rhit.signInUpManager.username);
 			let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.signInUpManager.uid);
 			ref.onSnapshot((doc) => {
 				let username = doc.get(rhit.FB_KEY_USERNAME);
@@ -117,7 +116,6 @@ rhit.CollectionPageController = class {
 			document.querySelector("#inputLocation").value = "";
 			document.querySelector("#inputDateFound").value = "";
 			document.querySelector("#inputDescription").value = "";
-			// document.querySelector("#fileInput").value = "";
 		});
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
 			// post animation
@@ -134,10 +132,6 @@ rhit.CollectionPageController = class {
 		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
 			let ids = getCheckedCapsId();
 			rhit.capsManager.delete(ids);
-			// var checkboxes = document.querySelectorAll("input[type='checkbox']");
-			// for (let i = 0; i < checkboxes.length; i++) {
-			// 	checkboxes[i].checked = false;
-			// }
 		});
 
 
@@ -251,7 +245,6 @@ rhit.CapsManager = class {
 			});
 	}
 	delete(ids) {
-		// console.log("One cap slected has id", ids[0]);
 		if (!!ids.length) {
 			for (let i = 0; i < ids.length; i++) {
 				let ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS).doc(ids[i]);
@@ -277,7 +270,6 @@ rhit.CapsManager = class {
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
 			this._documentSnapshots = querySnapshot.docs;
 			console.log(this._documentSnapshots);
-			// this.stopListening();
 			changeListener();
 		});
 	}
@@ -308,10 +300,6 @@ rhit.CapsManager = class {
 		);
 		return cap;
 	}
-
-	// search(searchCrit) {
-
-	// }
 }
 
 rhit.Caps = class {
@@ -356,7 +344,6 @@ rhit.DetailsPageController = class {
 			document.querySelector("#inputLocation").value = rhit.singleCapManager.location;
 			document.querySelector("#inputDateFound").value = rhit.singleCapManager.dateFound;
 			document.querySelector("#inputDescription").value = rhit.singleCapManager.description;
-			// document.querySelector("#fileInput").value = rhit.singleCapManager.pic;
 		});
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
 			// post animation
@@ -382,6 +369,7 @@ rhit.DetailsPageController = class {
 			document.getElementById("deleteButton").style.display = "none";
 		}
 		document.querySelector("#detailDrinkName").innerHTML = rhit.singleCapManager.drinkName;
+		document.querySelector("#detailPic").src = rhit.singleCapManager.pic;
 		var quality = rhit.singleCapManager.quality
 		document.querySelector("#detailQuality").innerHTML = "<strong>" + quality.slice(2, quality.length) + "<strong>";
 		document.querySelector("#detailLocation").innerHTML = rhit.singleCapManager.location;
@@ -420,13 +408,10 @@ rhit.SingleCapManager = class {
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
-				//console.log("Document data:", doc.data());
 				this._documentSnapshot = doc;
 				changeListener();
 			} else {
-				// doc.data() will be undefined in this case
 				console.log("No such document!");
-				// window.location.href="/";
 			}
 		});
 	}
@@ -540,10 +525,16 @@ rhit.StatsPageController = class {
 		rhit.statsManager.beginListening(this.updateView.bind(this));
 	}
 	updateView() {
-		this._updateLine();
-		this._updatePie();
+		if (rhit.statsManager.length < 2) {
+			document.getElementById("noCapsText").innerHTML = "Add more caps to see your statistics!";
+			var statsTexts = document.querySelectorAll(".statsText");
+			statsTexts[0].innerHTML ="";
+			statsTexts[1].innerHTML="";
+		} else {
+			this._updateLine();
+			this._updatePie();
+		}
 	}
-
 
 	// Template D3 line graph from: https://www.d3-graph-gallery.com/graph/line_basic.html
 	_updateLine() {
@@ -620,7 +611,7 @@ rhit.StatsPageController = class {
 			//console.log("over", point);
 			Tooltip
 				.html("Date: " + point.dateString + "<br>Value: " + point.value)
-				.style("left", (d3.mouse(this)[0]+6) + "px")
+				.style("left", (d3.mouse(this)[0] + 6) + "px")
 				.style("top", (d3.mouse(this)[1]) + "px")
 		}
 		var mouseleave = function (d) {
@@ -688,9 +679,9 @@ rhit.StatsPageController = class {
 		}
 		var mousemove = function (d) {
 
-			Tooltip.html("Location: " + d.data.key+"<br># Caps: "+d.data.value)
-				.style("left", (d3.mouse(this)[0]+200) + "px")
-				.style("top", (d3.mouse(this)[1]+200) + "px");
+			Tooltip.html("Location: " + d.data.key + "<br># Caps: " + d.data.value)
+				.style("left", (d3.mouse(this)[0] + 200) + "px")
+				.style("top", (d3.mouse(this)[1] + 200) + "px");
 		};
 
 		var mouseout = function () {
@@ -743,7 +734,6 @@ rhit.StatsManager = class {
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
-			//console.log(this._documentSnapshots);
 			this._documentSnapshots = querySnapshot.docs;
 			changeListener();
 		});
@@ -770,7 +760,6 @@ rhit.StatsManager = class {
 		var total = 0;
 		for (let i = 0; i < caps.length; i++) {
 			var currentDate = caps[i].get(rhit.FB_KEY_DATE_FOUND)
-			// console.log(`At ${i} date is ${currentDate}`);
 			total++;
 			if (dates.includes(currentDate)) {
 				let i = dates.indexOf(currentDate);
@@ -798,9 +787,7 @@ rhit.StatsManager = class {
 		var caps = this._documentSnapshots;
 		for (let i = 0; i < caps.length; i++) {
 			var currentLocation = caps[i].get(rhit.FB_KEY_LOCATION);
-			// console.log(`At ${i} location is ${currentLocation}`);
 			if (locations.includes(currentLocation)) {
-				// console.log("Repeat!");
 				let i = locations.indexOf(currentLocation);
 				counts[i]++;
 			} else {
@@ -919,7 +906,6 @@ rhit.MyAccountManager = class {
 			.catch(function (error) {
 				console.log('Error deleting ref:', error);
 			});;
-		// admin.auth().deleteUser(this._uid)
 		firebase.auth().currentUser.delete()
 			.then(function () {
 				console.log('Successfully deleted user');
@@ -1197,7 +1183,6 @@ rhit.main = function () {
 	document.getElementById("publicSwitch").addEventListener('click', function (event) {
 		console.log("Clicked public collection in menu");
 		rhit.myAccountManager.toggleIsPublic();
-		//console.log("Collection is now pblic:", rhit.signInUpManager.isPublicCurrent);
 	});
 	document.getElementById("isPublicNav").addEventListener('click', function (event) {
 		event.stopPropagation();

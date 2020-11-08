@@ -335,8 +335,10 @@ nav .dropdown-item {
 .statsGraph h3{
     text-align: center;
 }
-
-#statsPage {
+#noCapsText {
+    text-align: center;
+}
+#statsPage >div{
     display: flex;
     margin-left: auto;
     margin-right: auto;

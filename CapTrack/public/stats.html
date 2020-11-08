@@ -26,16 +26,21 @@
       <div class="dropdown-menu" aria-labelledby="lr1">
         <button id="homeNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='mycollection.html'">
+        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='mycollection.html'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
-        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='gettingStarted.html'">
           <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
-        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='explore.html'">
+        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='explore.html'">
           <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
-        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='#'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-          <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+        <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
         <div id="isPublicNav" class="dropdown-item">
           &nbsp;&nbsp;Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -64,17 +69,19 @@
     <span>&nbsp;</span>
   </nav>
 
-  <div id="statsPage" class="row container page-container">
-    <div id="statsTime" class="col-12 col-lg-6 statsGraph">
-      <h3>Number of Caps over Time</h3>
-      <br>
-      <div id="capsOverTime"></div>
+  <div id="statsPage" class="container page-container">
+    <h3 id="noCapsText"></h3>
+    <div class="row" >
+      <div id="statsTime" class="col-12 col-lg-6 statsGraph">
+        <h3 class="statsText" >Number of Caps over Time</h3>
+        <br>
+        <div id="capsOverTime"></div>
+      </div>
+      <div id="statsLocation" class="col-12 col-lg-6 statsGraph">
+        <h3 class="statsText">Number of Caps per Location</h3>
+        <div id="capsInPlaces"></div>
+      </div>
     </div>
-    <div id="statsLocation" class="col-12 col-lg-6 statsGraph">
-      <h3>Number of Caps per Location</h3>
-      <div id="capsInPlaces"></div>
-    </div>
-    
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
