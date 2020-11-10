@@ -78,11 +78,6 @@ rhit.CollectionPageController = class {
 	constructor() {
 
 		// Add cap listeners
-		document.querySelector("#submitSearchCap").addEventListener("click", (event) => {
-			const searchCrit = document.querySelector("#inputSearchCriteria").value;
-			rhit.capsManager.search(searchCrit);
-		})
-
 		document.querySelector("#fileInput").addEventListener("change", (event) => {
 			const file = event.target.files[0];
 			console.log(`Received file named ${file.name}`);
@@ -93,6 +88,11 @@ rhit.CollectionPageController = class {
 					document.getElementById("inputImage").src = downloadUrl;
 				});
 			});
+		});
+
+		document.querySelector("#submitSearchCap").addEventListener("click", (event) => {
+			const searchQuery = document.querySelector("#inputSearchCriteria").value;
+			rhit.capsManager.search(searchQuery);
 		});
 
 		document.querySelector("#submitAddCap").addEventListener("click", (event) => {
@@ -260,6 +260,12 @@ rhit.CapsManager = class {
 		}
 
 	}
+
+	search(searchQuery) {
+		let results = this._ref.orderBy('drinkName').startAt(searchQuery).endAt(searchQuery+"\uf8ff");
+		console.log(results);
+	}
+
 	beginListening(changeListener) {
 		var query = this._queryDate;
 		if (this.queryType === "Alph") {
