@@ -78,16 +78,20 @@
         <div class="statsText" id="radioButtons">
           <span>See data for the past:</span>
           <div class="checkboxgroup">
-            <input type="radio" name="quality" id="radioYear" value="Year" checked/>
+            <input type="radio" name="domain" id="radioYear" value="All" checked/>
+            <label for="radioYear">All</label>
+          </div>
+          <div class="checkboxgroup">
+            <input type="radio" name="domain" id="radioYear" value="Year"/>
             <label for="radioYear">Year</label>
           </div>
           <div class="checkboxgroup">
-            <input type="radio" name="quality" id="radioMonth" value="Month" />
+            <input type="radio" name="domain" id="radioMonth" value="Month" />
             <label for="radioMonth">Month</label>
           </div>
           <div class="checkboxgroup">
-            <input type="radio" name="quality" id="radioWeek" value="Week" />
-            <label for="radioWeek">Day</label>
+            <input type="radio" name="domain" id="radioWeek" value="Week" />
+            <label for="radioWeek">Week</label>
           </div>
         </div>
         <br>

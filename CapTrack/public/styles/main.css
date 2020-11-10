@@ -176,6 +176,15 @@ nav .dropdown-item {
     margin-bottom: 8px;
 }
 
+.descript {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 200px;
+
+}
+
 #capsListContainer {
     column-count: 3;
     column-gap: 5px;
@@ -211,6 +220,9 @@ nav .dropdown-item {
     .capCard img {
         width: 75px;
         height: 75px;
+    }
+    .descript {
+        width: 200px;
     }
 }
 

@@ -102,7 +102,7 @@ rhit.CollectionPageController = class {
 			const dateFound = document.querySelector("#inputDateFound").value;
 			const description = document.querySelector("#inputDescription").value;
 			var pic = document.getElementById("inputImage").src;
-			if(pic === "https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png"){
+			if (pic === "https://cdn2.iconfinder.com/data/icons/rounded-white-basic-ui-set-3/139/Photo_Add-RoundedWhite-512.png") {
 				//TODO: Add default pic here	
 				// pic = "data:image/jpeg;base64,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";
 			}
@@ -201,7 +201,7 @@ rhit.CollectionPageController = class {
           <h5>${cap.drinkName}</h5>
           <span><strong>${cap.quality}</strong></span>
           <br>
-          <span>${cap.description}</span>
+          <span class="overflow-hidden descript">${cap.description}</span>
         </div>
       </div>`);
 	}
@@ -536,24 +536,55 @@ rhit.UsersManager = class {
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 rhit.StatsPageController = class {
 	constructor() {
+		this.svg = null;
+		this.x = null;
+		this.gx=null;
+		this.y=null;
+		this.xAxis = null;
+		this.path = null;
+		this.data = null;
+
 		console.log("On the stats page!");
+		var radioButtons = document.querySelectorAll("input[name='domain']");
+		var domain;
+		radioButtons.forEach((button) => {
+			button.onclick = () => {
+				var now = new Date();
+				if (button.value == "Year") {
+					let start = now.setFullYear(now.getFullYear() - 1);
+					domain = [start, new Date()];
+					this.xAxis.ticks(12).tickFormat(d3.timeFormat('%b'));
+				} else if (button.value == "Month") {
+					let start = now.setMonth(now.getMonth() - 1);
+					domain = [start, new Date()];
+					this.xAxis.ticks(d3.timeDay.every(3)).tickFormat(d3.timeFormat('%m/%d'));
+				} else if (button.value == "Week") {
+					let start = now.setDate(now.getDate() - 7);
+					domain = [start, new Date()];
+					this.xAxis.ticks(7).tickFormat(d3.timeFormat('%d'));
+				} else {
+					domain = null;
+				}
+				this._updateLine(domain);
+			}
+		})
 		rhit.statsManager.beginListening(this.updateView.bind(this));
 	}
-	updateView() {
+	updateView(domainText) {
 		if (rhit.statsManager.length < 3) {
 			document.getElementById("noCapsText").innerHTML = "Add more caps to see your statistics!";
 			var statsTexts = document.querySelectorAll(".statsText");
-			statsTexts[0].innerHTML ="";
-			statsTexts[1].innerHTML="";
-			statsTexts[2].innerHTML="";
+			statsTexts[0].innerHTML = "";
+			statsTexts[1].innerHTML = "";
+			statsTexts[2].innerHTML = "";
 		} else {
-			this._updateLine();
-			this._updatePie();
+			this._makeLine();
+			this._makePie();
 		}
 	}
 
 	// Template D3 line graph from: https://www.d3-graph-gallery.com/graph/line_basic.html
-	_updateLine() {
+	_makeLine() {
 		// set the dimensions and margins of the graph
 		var margin = {
 				top: 10,
@@ -565,7 +596,7 @@ rhit.StatsPageController = class {
 			height = 400 - margin.top - margin.bottom;
 
 		// append the svg object to the body of the page
-		var svg = d3.select("#capsOverTime")
+		this.svg = d3.select("#capsOverTime")
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
@@ -575,6 +606,7 @@ rhit.StatsPageController = class {
 
 
 		var data = rhit.statsManager.getDates();
+		this.data = data;
 
 		// Add X axis --> it is a date format
 		var x = d3.scaleTime()
@@ -582,9 +614,12 @@ rhit.StatsPageController = class {
 				return d.date;
 			}))
 			.range([0, width]);
-		svg.append("g")
+		this.x = x;
+		this.xAxis = d3.axisBottom(x)
+			.tickFormat(d3.timeFormat('%b'));
+		this.gx =this.svg.append("g")
 			.attr("transform", "translate(0," + height + ")")
-			.call(d3.axisBottom(x));
+			.call(this.xAxis);
 
 		// Max value observed:
 		const max = d3.max(data, function (d) {
@@ -595,7 +630,8 @@ rhit.StatsPageController = class {
 		var y = d3.scaleLinear()
 			.domain([0, max])
 			.range([height, 0]);
-		svg.append("g")
+		this.y=y;
+		this.svg.append("g")
 			.call(d3.axisLeft(y));
 
 		// create a tooltip
@@ -628,7 +664,7 @@ rhit.StatsPageController = class {
 			Tooltip
 				.html("Date: " + point.dateString + "<br>Value: " + point.value)
 				.style("left", (d3.mouse(this)[0] + 6) + "px")
-				.style("top", (d3.mouse(this)[1]) + "px")
+				.style("top", (d3.mouse(this)[1] + 70) + "px")
 		}
 		var mouseleave = function (d) {
 			Tooltip
@@ -636,14 +672,14 @@ rhit.StatsPageController = class {
 		}
 
 		// Add the line
-		svg.append("path")
+		this.path = this.svg.append("path")
 			.datum(data)
 			.attr("fill", "none")
 			.attr("stroke", "black")
 			.attr("stroke-width", 2)
 			.attr("d", d3.line()
 				.x(function (d) {
-					console.log(d.date);
+					//console.log(d.date);
 					return x(d.date)
 				})
 				.y(function (d) {
@@ -655,9 +691,32 @@ rhit.StatsPageController = class {
 			.on("mouseleave", mouseleave)
 	}
 
+	_updateLine(domain) {
+		if (!domain) {
+			domain = d3.extent(this.data, function (d) {
+				return d.date;
+			});
+		}
+		console.log(domain);
+		const t = this.svg.transition().duration(750);
+		var x = this.x;
+		var y = this.y;
+		this.x.domain(domain);
+		this.gx.transition(t).call(this.xAxis, this.x);
+		this.path.transition(t).attr("d", d3.line()
+			.x(function (d) {
+				//console.log(d.date);
+				return x(d.date) || 0
+			})
+			.y(function (d) {
+				return y(d.value) || 0
+			})
+		);
+	}
+
 
 	// Template d3 pir chart from: https://www.d3-graph-gallery.com/graph/pie_changeData.html
-	_updatePie() {
+	_makePie() {
 		// set the dimensions and margins of the graph
 		var width = 450;
 		var height = 450;
