@@ -332,9 +332,18 @@ rhit.DetailsPageController = class {
 			const dateFound = document.querySelector("#inputDateFound").value;
 			const description = document.querySelector("#inputDescription").value;
 			var pic = document.getElementById("inputImage").src;
-			// const pic = document.querySelector("#fileInput").value;
-			// const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
 			rhit.singleCapManager.edit(drinkName, quality, location, dateFound, description, pic);
+		});
+		document.querySelector("#fileInput").addEventListener("change", (event) => {
+			const file = event.target.files[0];
+			console.log(`Received file named ${file.name}`);
+			const storageRef = firebase.storage().ref().child(rhit.signInUpManager.uid + file.name);
+			storageRef.put(file).then((uploadTaskSnapshot) => {
+				console.log("The file has been uploaded!");
+				storageRef.getDownloadURL().then((downloadUrl) => {
+					document.getElementById("inputImage").src = downloadUrl;
+				});
+			});
 		});
 		$("#editCapDialog").on("show.bs.modal", (event) => {
 			// pre animation
@@ -349,6 +358,7 @@ rhit.DetailsPageController = class {
 			document.querySelector("#inputLocation").value = rhit.singleCapManager.location;
 			document.querySelector("#inputDateFound").value = rhit.singleCapManager.dateFound;
 			document.querySelector("#inputDescription").value = rhit.singleCapManager.description;
+			document.querySelector("#inputImage").src = rhit.singleCapManager.pic;
 		});
 		$("#addCapDialog").on("shown.bs.modal", (event) => {
 			// post animation
