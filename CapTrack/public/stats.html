@@ -75,6 +75,22 @@
       <div id="statsTime" class="col-12 col-lg-6 statsGraph">
         <h3 class="statsText" >Number of Caps over Time</h3>
         <br>
+        <div class="statsText" id="radioButtons">
+          <span>See data for the past:</span>
+          <div class="checkboxgroup">
+            <input type="radio" name="quality" id="radioYear" value="Year" checked/>
+            <label for="radioYear">Year</label>
+          </div>
+          <div class="checkboxgroup">
+            <input type="radio" name="quality" id="radioMonth" value="Month" />
+            <label for="radioMonth">Month</label>
+          </div>
+          <div class="checkboxgroup">
+            <input type="radio" name="quality" id="radioWeek" value="Week" />
+            <label for="radioWeek">Day</label>
+          </div>
+        </div>
+        <br>
         <div id="capsOverTime"></div>
       </div>
       <div id="statsLocation" class="col-12 col-lg-6 statsGraph">

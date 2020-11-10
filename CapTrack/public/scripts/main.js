@@ -331,8 +331,9 @@ rhit.DetailsPageController = class {
 			const location = document.querySelector("#inputLocation").value;
 			const dateFound = document.querySelector("#inputDateFound").value;
 			const description = document.querySelector("#inputDescription").value;
+			var pic = document.getElementById("inputImage").src;
 			// const pic = document.querySelector("#fileInput").value;
-			const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
+			// const pic = "https://i.pinimg.com/236x/ba/06/a8/ba06a8e88aafd198f1fc050891eb3298.jpg"
 			rhit.singleCapManager.edit(drinkName, quality, location, dateFound, description, pic);
 		});
 		$("#editCapDialog").on("show.bs.modal", (event) => {
@@ -534,6 +535,7 @@ rhit.StatsPageController = class {
 			var statsTexts = document.querySelectorAll(".statsText");
 			statsTexts[0].innerHTML ="";
 			statsTexts[1].innerHTML="";
+			statsTexts[2].innerHTML="";
 		} else {
 			this._updateLine();
 			this._updatePie();
