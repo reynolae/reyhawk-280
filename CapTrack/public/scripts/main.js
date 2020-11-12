@@ -186,8 +186,12 @@ rhit.CollectionPageController = class {
 		console.log(rhit.capsManager.length, "length?");
 		for (let i = 0; i < rhit.capsManager.length; i++) {
 			const cap = rhit.capsManager.getCapAtIndex(i);
-			const newCard = this._createCard(cap);
-
+			var newCard;
+			if (rhit.capsManager.user != rhit.signInUpManager.uid) {
+				newCard = this._createSmallCard(cap);
+			} else {
+				newCard = this._createCard(cap);
+			}
 			newCard.querySelector("#capPic").onclick = (event) => {
 				window.location.href = `/details.html?id=${cap.id}&user=${rhit.capsManager.user}`
 			};
