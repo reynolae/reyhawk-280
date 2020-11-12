@@ -25,16 +25,21 @@
       <div class="dropdown-menu" aria-labelledby="lr1">
         <button id="homeNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='/'">
           <i class="material-icons">home</i>&nbsp;&nbsp;&nbsp;Home</button>
-        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='mycollection.html'">
+        <button id="myCollectionNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='mycollection.html'">
           <i class="material-icons">dns</i>&nbsp;&nbsp;&nbsp;My Collection</button>
-        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='gettingStarted.html'">
+        <button id="gettingStartedNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='gettingStarted.html'">
           <i class="material-icons">directions_run</i>&nbsp;&nbsp;&nbsp;Getting Started</button>
-        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='#'">
+        <button id="exploreNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='#'">
           <i class="material-icons">language</i>&nbsp;&nbsp;&nbsp;Explore</button>
-        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='stats.html'">
+        <button id="statsNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='stats.html'">
           <i class="material-icons">trending_up</i>&nbsp;&nbsp;&nbsp;Statistics</button>
         <div class="dropdown-divider"></div>
-          <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal" onclick="window.location.href='myAccount.html'">
+        <button id="myAccountNav" class="dropdown-item" type="button" data-toggle="modal"
+          onclick="window.location.href='myAccount.html'">
           <i class="material-icons">perm_identity</i>&nbsp;&nbsp;&nbsp;My Account</button>
         <div id="isPublicNav" class="dropdown-item">
           &nbsp;&nbsp;Public Collection&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -60,13 +65,37 @@
     <span>&nbsp;</span>
     <span>&nbsp;</span>
     <span>&nbsp;</span>
-    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false">
+    <button class="btn bmd-btn-icon" type="button" aria-haspopup="true" aria-expanded="false" data-toggle="modal"
+      data-target="#searchUserDialog">
       <i class="material-icons">search</i></button>
   </nav>
 
   <div id="explorePage" class="container page-container">
     <div id='capsListContainer'>Loading ...</div>
   </div>
+
+  <!-- Search User modal -->
+  <div class="modal fade" id="searchUserDialog" tabindex="-1" role="dialog" aria-labelledby="Search user dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Search for a user (Case sensitive)</h5>
+        </div>
+        <div class="modal-body">
+          <input id="inputSearchCriteria" class="form-control form-control-sm mr-3 w-75" type="text"
+            placeholder="Enter Username" aria-label="Search">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <div id="foundUsersContainer"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+          <button id="submitSearchUser" type="button" class="btn btn-primary">SEARCH</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>

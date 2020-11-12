@@ -90,11 +90,6 @@ rhit.CollectionPageController = class {
 			});
 		});
 
-		document.querySelector("#submitSearchCap").addEventListener("click", (event) => {
-			const searchQuery = document.querySelector("#inputSearchCriteria").value;
-			rhit.capsManager.search(searchQuery);
-		});
-
 		document.querySelector("#submitAddCap").addEventListener("click", (event) => {
 			const drinkName = document.querySelector("#inputDrinkName").value;
 			const quality = document.querySelector('input[name="quality"]:checked').value;
@@ -136,6 +131,27 @@ rhit.CollectionPageController = class {
 		document.querySelector("#submitDeleteCap").addEventListener("click", (event) => {
 			let ids = getCheckedCapsId();
 			rhit.capsManager.delete(ids);
+		});
+
+		// Search cap listener
+		document.querySelector("#submitSearchCap").addEventListener("click", (event) => {
+			const searchQuery = document.querySelector("#inputSearchCriteria").value;
+			console.log("You are trying to search for ", searchQuery);
+			rhit.capsManager.search(searchQuery);
+			setTimeout(this.updateModal.bind(this), 200);
+		});
+		$("#searchCapDialog").on("show.bs.modal", (event) => {
+			// pre animation
+			document.querySelector("#inputSearchCriteria").value = "";
+			const newList = htmlToElement('<div id="foundCapsContainer"></div>');
+			const oldList = document.querySelector("#foundCapsContainer");
+			oldList.removeAttribute("id");
+			oldList.hidden = true;
+			oldList.parentElement.appendChild(newList);
+		});
+		$("#searchCapDialog").on("shown.bs.modal", (event) => {
+			// post animation
+			document.querySelector("#inputSearchCriteria").focus();
 		});
 
 
@@ -183,7 +199,25 @@ rhit.CollectionPageController = class {
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
+	}
+	updateModal() {
+		let caps = rhit.capsManager.foundCaps;
+		const newList = htmlToElement('<div id="foundCapsContainer"><br></div>');
+		console.log(caps.length, "length?");
+		for (let i = 0; i < caps.length; i++) {
+			const newCard = this._createSmallCard(caps[i]);
 
+			newCard.querySelector("#capPic").onclick = (event) => {
+				window.location.href = `/details.html?id=${caps[i].id}&user=${rhit.capsManager.user}`
+			};
+
+			newList.appendChild(newCard);
+		}
+
+		const oldList = document.querySelector("#foundCapsContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
 	}
 	_createCard(cap) {
 		return htmlToElement(`<div class="capCard row">
@@ -194,6 +228,19 @@ rhit.CollectionPageController = class {
             </div>
           </div>
         </div>
+        <div class="col-3">
+          <img src="${cap.pic}" alt="example cap" id="capPic">
+        </div>
+        <div class="col-8">
+          <h5>${cap.drinkName}</h5>
+          <span><strong>${cap.quality}</strong></span>
+          <br>
+          <span class="overflow-hidden descript">${cap.description}</span>
+        </div>
+      </div>`);
+	}
+	_createSmallCard(cap) {
+		return htmlToElement(`<div class="capCard row">
         <div class="col-3">
           <img src="${cap.pic}" alt="example cap" id="capPic">
         </div>
@@ -222,6 +269,7 @@ function getCheckedCapsId() {
 rhit.CapsManager = class {
 	constructor(userId) {
 		this._documentSnapshots = [];
+		this._searchCaps = [];
 		this._user = userId;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(this._user).collection(rhit.FB_COLLECTION_CAPS);
 		this._unsubscribe = null;
@@ -262,8 +310,15 @@ rhit.CapsManager = class {
 	}
 
 	search(searchQuery) {
-		let results = this._ref.orderBy('drinkName').startAt(searchQuery).endAt(searchQuery+"\uf8ff");
-		console.log(results);
+		let newRef = this._ref.orderBy(rhit.FB_KEY_DRINK_NAME).startAt(searchQuery).endAt(searchQuery + "\uf8ff");
+		this._foundCaps = [];
+		newRef.onSnapshot((querySnapshot) => {
+			for (let i = 0; i < querySnapshot.docs.length; i++) {
+				let currentCap = this.searchCapAtIndex(i, querySnapshot.docs);
+				this._foundCaps.push(currentCap);
+				console.log(this._foundCaps);
+			}
+		});
 	}
 
 	beginListening(changeListener) {
@@ -294,11 +349,29 @@ rhit.CapsManager = class {
 		return this._user;
 	}
 
+	get foundCaps() {
+		return this._foundCaps;
+	}
+
 	setquery(orderType) {
 		this.queryType = orderType;
 	}
 	getCapAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
+		const cap = new rhit.Caps(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_DRINK_NAME),
+			docSnapshot.get(rhit.FB_KEY_QUALITY),
+			docSnapshot.get(rhit.FB_KEY_LOCATION),
+			docSnapshot.get(rhit.FB_KEY_DATE_FOUND),
+			docSnapshot.get(rhit.FB_KEY_DESCRIPTION),
+			docSnapshot.get(rhit.FB_KEY_PIC),
+		);
+		return cap;
+	}
+
+	searchCapAtIndex(index, doc) {
+		const docSnapshot = doc[index];
 		const cap = new rhit.Caps(
 			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_DRINK_NAME),
@@ -469,6 +542,26 @@ rhit.SingleCapManager = class {
 rhit.ExplorePageController = class {
 	constructor() {
 		// start listening
+		// Search cap listener
+		document.querySelector("#submitSearchUser").addEventListener("click", (event) => {
+			const searchQuery = document.querySelector("#inputSearchCriteria").value;
+			console.log("You are trying to search for ", searchQuery);
+			rhit.usersManager.search(searchQuery);
+			setTimeout(this.updateModal.bind(this), 200);
+		});
+		$("#searchUserDialog").on("show.bs.modal", (event) => {
+			// pre animation
+			document.querySelector("#inputSearchCriteria").value = "";
+			const newList = htmlToElement('<div id="foundUsersContainer"></div>')
+			const oldList = document.querySelector("#foundUsersContainer");
+			oldList.removeAttribute("id");
+			oldList.hidden = true;
+			oldList.parentElement.appendChild(newList);
+		});
+		$("#searchUserDialog").on("shown.bs.modal", (event) => {
+			// post animation
+			document.querySelector("#inputSearchCriteria").focus();
+		});
 		rhit.usersManager.beginListening(this.updateView.bind(this))
 	}
 	updateView() {
@@ -483,6 +576,23 @@ rhit.ExplorePageController = class {
 			newList.appendChild(newCard);
 		}
 		const oldList = document.querySelector("#capsListContainer");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+	}
+	updateModal() {
+		let users = rhit.usersManager.foundUsers;
+		const newList = htmlToElement('<div id="foundUsersContainer"><br></div>')
+		for (let i = 0; i < users.length; i++) {
+			const user = users[i];
+			const newCard = this._createCard(user);
+
+			newCard.querySelector("#userPic").onclick = (event) => {
+				window.location.href = `/mycollection.html?user=${user.id}`
+			};
+			newList.appendChild(newCard);
+		}
+		const oldList = document.querySelector("#foundUsersContainer");
 		oldList.removeAttribute("id");
 		oldList.hidden = true;
 		oldList.parentElement.appendChild(newList);
@@ -503,8 +613,19 @@ rhit.ExplorePageController = class {
 rhit.UsersManager = class {
 	constructor() {
 		this._documentSnapshots = {};
+		this._foundUsers = [];
 		this._unsubscribe = null;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).limit(50).where(rhit.FB_KEY_IS_PUBLIC, "==", true);
+	}
+	search(searchQuery) {
+		let newRef = this._ref.orderBy(rhit.FB_KEY_USERNAME).startAt(searchQuery).endAt(searchQuery + "\uf8ff");
+		this._foundUsers = [];
+		newRef.onSnapshot((querySnapshot) => {
+			for (let i = 0; i < querySnapshot.docs.length; i++) {
+				let currentUser = this.searchUserAtIndex(i, querySnapshot.docs);
+				this._foundUsers.push(currentUser);
+			}
+		});
 	}
 	beginListening(changeListener) {
 		this._unsubscribe = this._ref.onSnapshot((querySnapshot) => {
@@ -519,8 +640,24 @@ rhit.UsersManager = class {
 	get length() {
 		return this._documentSnapshots.length
 	}
+	get foundUsers() {
+		return this._foundUsers;
+	}
+
 	getUserAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
+		const user = new rhit.Users(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_DATE_JOINED),
+			docSnapshot.get(rhit.FB_KEY_IS_PUBLIC),
+			docSnapshot.get(rhit.FB_KEY_NUM_CAPS),
+			docSnapshot.get(rhit.FB_KEY_USERNAME),
+			docSnapshot.get(rhit.FB_KEY_USER_PIC),
+		);
+		return user;
+	}
+	searchUserAtIndex(index, doc) {
+		const docSnapshot = doc[index];
 		const user = new rhit.Users(
 			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_DATE_JOINED),
@@ -544,8 +681,8 @@ rhit.StatsPageController = class {
 	constructor() {
 		this.svg = null;
 		this.x = null;
-		this.gx=null;
-		this.y=null;
+		this.gx = null;
+		this.y = null;
 		this.xAxis = null;
 		this.path = null;
 		this.data = null;
@@ -623,7 +760,7 @@ rhit.StatsPageController = class {
 		this.x = x;
 		this.xAxis = d3.axisBottom(x)
 			.tickFormat(d3.timeFormat('%b'));
-		this.gx =this.svg.append("g")
+		this.gx = this.svg.append("g")
 			.attr("transform", "translate(0," + height + ")")
 			.call(this.xAxis);
 
@@ -636,7 +773,7 @@ rhit.StatsPageController = class {
 		var y = d3.scaleLinear()
 			.domain([0, max])
 			.range([height, 0]);
-		this.y=y;
+		this.y = y;
 		this.svg.append("g")
 			.call(d3.axisLeft(y));
 
