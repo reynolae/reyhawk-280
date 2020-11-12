@@ -233,9 +233,8 @@ rhit.CollectionPageController = class {
         </div>
         <div class="col-8">
           <h5>${cap.drinkName}</h5>
-          <span><strong>${cap.quality}</strong></span>
-          <br>
-          <span class="overflow-hidden descript">${cap.description}</span>
+          <div><strong>${cap.quality}</strong></div>
+          <div class="overflow-hidden descript">${cap.description}</div>
         </div>
       </div>`);
 	}
@@ -246,9 +245,8 @@ rhit.CollectionPageController = class {
         </div>
         <div class="col-8">
           <h5>${cap.drinkName}</h5>
-          <span><strong>${cap.quality}</strong></span>
-          <br>
-          <span class="overflow-hidden descript">${cap.description}</span>
+          <div><strong>${cap.quality}</strong></div>
+          <div class="overflow-hidden descript">${cap.description}</div>
         </div>
       </div>`);
 	}

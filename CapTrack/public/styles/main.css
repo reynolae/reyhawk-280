@@ -1,5 +1,6 @@
 body {
     background: #EEF0EB;
+    line-height: 1.3;
 }
 
 .navbar {
@@ -17,7 +18,7 @@ nav .dropdown-item {
     left: -220px;
 }
 .lower {
-    top: 56px;
+    top: 52px;
     background-color: #284B63;
     color: white;
 }
@@ -174,6 +175,7 @@ nav .dropdown-item {
 
 .capCard {
     margin-bottom: 8px;
+
 }
 
 .descript {
