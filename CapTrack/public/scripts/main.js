@@ -702,13 +702,26 @@ rhit.StatsPageController = class {
 				} else if (button.value == "Month") {
 					let start = now.setMonth(now.getMonth() - 1);
 					domain = [start, new Date()];
-					this.xAxis.ticks(d3.timeDay.every(3)).tickFormat(d3.timeFormat('%m/%d'));
+					this.xAxis.ticks(d3.timeDay.every(3)).tickFormat(function (date) {
+						if (d3.timeMonth(date) < date) {
+							return d3.timeFormat('%d')(date);
+						} else {
+							return d3.timeFormat('%b')(date);
+						}
+					});
 				} else if (button.value == "Week") {
 					let start = now.setDate(now.getDate() - 7);
 					domain = [start, new Date()];
 					this.xAxis.ticks(7).tickFormat(d3.timeFormat('%d'));
 				} else {
 					domain = null;
+					this.xAxis.ticks(12).tickFormat(function (date) {
+						if (d3.timeYear(date) < date) {
+							return d3.timeFormat('%b')(date);
+						} else {
+							return d3.timeFormat('%Y')(date);
+						}
+					});
 				}
 				this._updateLine(domain);
 			}
@@ -733,12 +746,13 @@ rhit.StatsPageController = class {
 		// set the dimensions and margins of the graph
 		var margin = {
 				top: 10,
-				right: 30,
+				right: 50,
 				bottom: 30,
-				left: 60
+				left: 50
 			},
-			width = 460 - margin.left - margin.right,
-			height = 400 - margin.top - margin.bottom;
+			widthString = getComputedStyle(document.getElementById("statsTime")).width,
+			width = parseFloat(widthString.slice(0, -2)) - margin.left - margin.right,
+			height = 0.87 * width - margin.top - margin.bottom;
 
 		// append the svg object to the body of the page
 		this.svg = d3.select("#capsOverTime")
@@ -761,7 +775,13 @@ rhit.StatsPageController = class {
 			.range([0, width]);
 		this.x = x;
 		this.xAxis = d3.axisBottom(x)
-			.tickFormat(d3.timeFormat('%b'));
+			.ticks(12).tickFormat(function (date) {
+				if (d3.timeYear(date) < date) {
+					return d3.timeFormat('%b')(date);
+				} else {
+					return d3.timeFormat('%Y')(date);
+				}
+			});
 		this.gx = this.svg.append("g")
 			.attr("transform", "translate(0," + height + ")")
 			.call(this.xAxis);
@@ -863,8 +883,9 @@ rhit.StatsPageController = class {
 	// Template d3 pir chart from: https://www.d3-graph-gallery.com/graph/pie_changeData.html
 	_makePie() {
 		// set the dimensions and margins of the graph
-		var width = 450;
-		var height = 450;
+		var widthString = getComputedStyle(document.getElementById("statsLocation")).width;
+		var width = parseFloat(widthString.slice(0, -2));
+		var height = parseFloat(widthString.slice(0, -2));
 		var margin = 40;
 
 		// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
@@ -898,7 +919,6 @@ rhit.StatsPageController = class {
 			Tooltip.style("opacity", 1)
 		}
 		var mousemove = function (d) {
-
 			Tooltip.html("Location: " + d.data.key + "<br># Caps: " + d.data.value)
 				.style("left", (d3.mouse(this)[0] + 200) + "px")
 				.style("top", (d3.mouse(this)[1] + 200) + "px");

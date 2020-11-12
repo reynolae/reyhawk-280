@@ -363,7 +363,12 @@ nav .dropdown-item {
     margin-left: auto;
     margin-right: auto;
 }
-
+#statsTime {
+    margin:auto;
+}
+#statsLocation {
+    margin:auto;
+}
 #statsTime svg {
     display: block;
     margin-left: auto;
