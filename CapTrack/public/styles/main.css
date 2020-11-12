@@ -277,8 +277,8 @@ nav .dropdown-item {
 
 @media only screen and (max-width: 500px) {
     #detailsPage img {
-        width: 150px;
-        height: 150px;
+        width: 125px;
+        height: 125px;
     }
 }
 
@@ -343,6 +343,12 @@ nav .dropdown-item {
     border-radius: 50%;
 }
 
+@media only screen and (max-width: 500px) {
+    #myAccountPage img {
+        width: 125px;
+        height: 125px;
+    }
+}
 
 
 /* Stats */
