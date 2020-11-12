@@ -365,9 +365,11 @@ nav .dropdown-item {
 }
 #statsTime {
     margin:auto;
+    width: 100%;
 }
 #statsLocation {
     margin:auto;
+    width: 100%;
 }
 #statsTime svg {
     display: block;
