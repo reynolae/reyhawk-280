@@ -825,7 +825,6 @@ rhit.StatsPageController = class {
 			}).left;
 			var i = bisect(data, x0, 1);
 			var point = data[i];
-			//console.log("over", point);
 			Tooltip
 				.html("Date: " + point.dateString + "<br>Value: " + point.value)
 				.style("left", (d3.mouse(this)[0] + 6) + "px")
@@ -844,7 +843,6 @@ rhit.StatsPageController = class {
 			.attr("stroke-width", 2)
 			.attr("d", d3.line()
 				.x(function (d) {
-					//console.log(d.date);
 					return x(d.date)
 				})
 				.y(function (d) {
@@ -870,7 +868,6 @@ rhit.StatsPageController = class {
 		this.gx.transition(t).call(this.xAxis, this.x);
 		this.path.transition(t).attr("d", d3.line()
 			.x(function (d) {
-				//console.log(d.date);
 				return x(d.date) || 0
 			})
 			.y(function (d) {
@@ -921,7 +918,7 @@ rhit.StatsPageController = class {
 		var mousemove = function (d) {
 			Tooltip.html("Location: " + d.data.key + "<br># Caps: " + d.data.value)
 				.style("left", (d3.mouse(this)[0] + 200) + "px")
-				.style("top", (d3.mouse(this)[1] + 200) + "px");
+				.style("top", (d3.mouse(this)[1] + 250) + "px");
 		};
 
 		var mouseout = function () {
@@ -998,6 +995,9 @@ rhit.StatsManager = class {
 		var counts = [];
 		var caps = this._documentSnapshots;
 		var total = 0;
+
+		// Goes through firestore caps and get the date, and pushes 
+		//        dates and the number of caps that have that date (counts)
 		for (let i = 0; i < caps.length; i++) {
 			var currentDate = caps[i].get(rhit.FB_KEY_DATE_FOUND)
 			total++;
@@ -1009,6 +1009,8 @@ rhit.StatsManager = class {
 				counts.push(total);
 			}
 		}
+
+		// Makes an array of objects containing parsed dates and counts
 		var objects = [];
 		for (let i = 0; i < dates.length; i++) {
 			objects.push({
